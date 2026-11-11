@@ -3,41 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel rezerwacji — pacjenci do zadzwonienia i trendy</title>
+<title>Pacjenci do skontaktowania</title>
 <style>
   :root{
-    --tlo:#f4f6fb; --karta:#ffffff; --granat:#2f5496; --granat-ciemny:#1f3864;
+    --tlo:#f4f6fb; --karta:#fff; --granat:#2f5496; --granat-ciemny:#1f3864;
     --tekst:#1e2430; --szary:#5b6472; --linia:#e3e8f0; --czerwony-tlo:#fce4e4;
     --czerwony:#c0392b; --zielony:#1e7d4f; --zielony-tlo:#e6f4ec;
-    /* role wykresów (zwalidowane dla jasnego tła) */
-    --surface-1:#fcfcfb; --text-primary:#0b0b0b; --text-secondary:#52514e;
-    --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7;
-    --wizyty:#2a78d6; --finanse:#eb6834;
-    --up:#006300; --down:#d03b3b;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--tlo);color:var(--tekst);line-height:1.5}
-  header{background:linear-gradient(135deg,var(--granat),var(--granat-ciemny));color:#fff;padding:24px 22px}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--tlo);color:var(--tekst);line-height:1.5}
+  header{background:linear-gradient(135deg,var(--granat),var(--granat-ciemny));color:#fff;padding:22px}
+  .hdrRzad{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;max-width:1100px;margin:0 auto}
   header h1{margin:0;font-size:22px;font-weight:700}
-  header p{margin:6px 0 0;opacity:.9;font-size:14px;max-width:920px}
-  .hdrRzad{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+  header p{margin:6px 0 0;opacity:.9;font-size:14px;max-width:760px}
   .hdrUzyt{display:flex;align-items:center;gap:10px;flex-shrink:0}
   .ktoBox{color:#fff;font-size:13.5px;background:rgba(255,255,255,.14);padding:6px 12px;border-radius:20px;white-space:nowrap}
-  .loginTlo{position:fixed;inset:0;background:linear-gradient(135deg,#2f5496,#1f3864);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
-  .loginTlo.ukryty{display:none}
-  .loginKarta{background:#fff;border-radius:16px;padding:28px;width:min(420px,94vw);box-shadow:0 16px 50px rgba(0,0,0,.35)}
-  .loginKarta h2{margin:0 0 4px;font-size:22px;color:var(--granat-ciemny)}
-  .loginInfo{margin:0 0 18px;color:var(--szary);font-size:14px}
-  .loginKarta .poleM{margin-bottom:14px}
-  .loginKarta label{display:block;font-size:12px;color:var(--szary);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px}
-  .loginKarta input{width:100%;padding:11px 12px;border:1px solid #c7d0e0;border-radius:10px;font-size:15px}
-  .loginBlad{color:var(--czerwony);font-size:13.5px;margin-bottom:10px;min-height:0}
-  .loginStopka{margin:14px 0 0;color:#98a;font-size:12px;line-height:1.5}
-  main{max-width:1200px;margin:0 auto;padding:22px}
-  .karta{background:var(--karta);border:1px solid var(--linia);border-radius:14px;padding:20px;margin-bottom:18px;
-    box-shadow:0 1px 3px rgba(20,30,60,.05)}
-  .drop{border:2px dashed #b9c4da;border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:.15s;background:#fbfcfe;display:block}
+  main{max-width:1100px;margin:0 auto;padding:22px}
+  .karta{background:var(--karta);border:1px solid var(--linia);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(20,30,60,.05)}
+  .drop{border:2px dashed #b9c4da;border-radius:12px;padding:24px 20px;text-align:center;cursor:pointer;transition:.15s;background:#fbfcfe;display:block}
   .drop:hover,.drop.drag{border-color:var(--granat);background:#eef3fc}
   .drop strong{color:var(--granat)}
   .drop .maly{color:var(--szary);font-size:13px;margin-top:6px}
@@ -49,94 +32,62 @@
   .rzad{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-top:16px}
   .pole label{display:block;font-size:12px;color:var(--szary);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
   .pole input,.pole select{padding:9px 11px;border:1px solid #c7d0e0;border-radius:9px;font-size:14px;background:#fff}
+  .chk{display:flex;align-items:center;gap:7px;font-size:14px;cursor:pointer}
   .btn{background:var(--granat);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
   .btn:hover{background:var(--granat-ciemny)}
-  .btn.pobierz{background:var(--zielony)}
-  .btn.pobierz:hover{background:#155f3b}
-  .btn.szary{background:#eef1f6;color:var(--granat-ciemny);border:1px solid #d3dbe8}
-  .btn.szary:hover{background:#e2e8f2}
-  /* zakładki */
-  .taby{display:flex;gap:6px;margin:2px 0 18px;border-bottom:2px solid var(--linia)}
-  .tab{background:none;border:none;padding:12px 18px;font-size:15px;font-weight:600;color:var(--szary);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
-  .tab.akt{color:var(--granat);border-bottom-color:var(--granat)}
-  .kafle{display:flex;flex-wrap:wrap;gap:14px}
-  .kafel{flex:1;min-width:150px;background:#f7f9fd;border:1px solid var(--linia);border-radius:12px;padding:14px 16px}
-  .kafel .num{font-size:28px;font-weight:800;color:var(--granat)}
-  .kafel.alarm .num{color:var(--czerwony)}
-  .kafel .opis{font-size:12.5px;color:var(--szary);margin-top:2px}
-  .zakres{font-size:13.5px;color:var(--szary);margin:2px 0 14px}
-  .zakres b{color:var(--tekst)}
-  .filtry{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:8px}
-  .filtry .grupa-przysz{background:#eef3fc;border:1px solid #cfdcf3;border-radius:10px;padding:8px 12px}
-  .filtry .grupa-przysz label{color:var(--granat-ciemny)}
-  .naglowek-sekcji{display:flex;align-items:center;gap:10px;margin:2px 0 12px;flex-wrap:wrap}
-  .naglowek-sekcji h2{font-size:16px;margin:0}
+  .btn.pobierz{background:var(--zielony)}.btn.pobierz:hover{background:#155f3b}
+  .btn.szary{background:#eef1f6;color:var(--granat-ciemny);border:1px solid #d3dbe8}.btn.szary:hover{background:#e2e8f2}
+  .podsum{font-size:15px;margin:2px 0 0}
+  .podsum b{color:var(--czerwony)}
+  .naglowek-sekcji{display:flex;align-items:center;gap:10px;margin:0 0 14px;flex-wrap:wrap}
+  .naglowek-sekcji h2{font-size:18px;margin:0}
   .licznik{font-size:13px;color:var(--szary)}
-  .akcje{margin-left:auto;display:flex;gap:10px}
+  .akcje{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+  .filtry{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:14px}
   .tabwrap{overflow-x:auto;border:1px solid var(--linia);border-radius:12px}
-  table{border-collapse:collapse;width:100%;font-size:13.5px}
-  th{background:var(--granat);color:#fff;padding:10px 12px;text-align:left;position:sticky;top:0;white-space:nowrap;font-weight:600;cursor:pointer;user-select:none}
-  th .strz{opacity:.6;font-size:11px}
-  td{padding:9px 12px;border-top:1px solid var(--linia);vertical-align:top}
-  tr.bez-przyszlej td{background:var(--czerwony-tlo)}
-  .subnagl{display:flex;align-items:baseline;gap:10px;margin:6px 0 8px;flex-wrap:wrap}
-  .subnagl h3{margin:0;font-size:15px;color:var(--granat-ciemny)}
-  .subnagl .podpis{font-size:12.5px;color:var(--szary)}
-  .tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
-  .tag.nie{background:var(--czerwony-tlo);color:var(--czerwony)}
-  .tag.tak{background:var(--zielony-tlo);color:var(--zielony)}
-  .nazwisko{font-weight:700}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th{background:var(--granat);color:#fff;padding:11px 12px;text-align:left;white-space:nowrap;font-weight:600}
+  td{padding:11px 12px;border-top:1px solid var(--linia);vertical-align:top}
+  tr:hover td{background:#fafcff}
+  tr.zamk td{opacity:.6}
+  .nazwisko{font-weight:700;font-size:15px}
+  .podw{font-size:12.5px;color:var(--szary);margin-top:3px}
+  .statusSel{padding:7px 9px;border-radius:8px;border:1px solid #c7d0e0;font-size:13.5px;font-weight:600;cursor:pointer;background:#fff}
+  .statusSel[data-s=do]{color:#a5451c;background:#fbe3d6;border-color:#f3cbb6}
+  .statusSel[data-s=zadzwoniono]{color:var(--zielony);background:var(--zielony-tlo);border-color:#bfe3cd}
+  .statusSel[data-s=mail]{color:#4a3aa7;background:#e8e2fb;border-color:#d2c8f3}
+  .statusSel[data-s=oddzwonic]{color:#8a6100;background:#fff3d6;border-color:#f0dfa8}
+  .statusSel[data-s=umowiono]{color:var(--granat-ciemny);background:#e0ebfb;border-color:#c6dbf6}
+  .statusSel[data-s=zrezygnowal]{color:#5b6472;background:#e9edf2;border-color:#d4dbe4}
+  .notka{font-size:13px;margin-top:6px;white-space:normal;word-break:break-word}
+  .przyp{font-size:12.5px;color:var(--szary);margin-top:4px}
+  .przyp.pilne{color:var(--czerwony);font-weight:700}
+  .ozn{font-size:12px;color:#7a8aa0;margin-top:4px}
+  .edytujBtn{background:#eef3fc;border:1px solid #cfdcf3;border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer;color:var(--granat);font-weight:600;white-space:nowrap}
+  .edytujBtn:hover{background:#e0ebfb}
   .pusto{padding:40px;text-align:center;color:var(--szary)}
-  footer{max-width:1200px;margin:0 auto;padding:6px 22px 40px;color:var(--szary);font-size:12.5px}
   .ukryty{display:none}
   .blad{background:var(--czerwony-tlo);color:var(--czerwony);padding:12px 14px;border-radius:10px;margin-top:14px;font-size:14px}
-  /* trendy */
-  .kpiRzad{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:6px}
-  .kpi{flex:1;min-width:210px;background:#f7f9fd;border:1px solid var(--linia);border-radius:12px;padding:16px}
-  .kpi .etyk{font-size:12.5px;color:var(--szary);text-transform:uppercase;letter-spacing:.03em;font-weight:600}
-  .kpi .duza{font-size:30px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
-  .delta{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:14px;padding:3px 10px;border-radius:20px;margin-top:8px}
-  .delta.up{background:var(--zielony-tlo);color:var(--up)}
-  .delta.down{background:var(--czerwony-tlo);color:var(--down)}
-  .delta.plaski{background:#eef1f6;color:var(--szary)}
-  .cel{border-left:4px solid var(--granat);background:#f2f6fd;border-radius:10px;padding:14px 16px;margin:12px 0 4px;font-size:14.5px}
-  .cel b{color:var(--granat-ciemny)}
-  .wykresBox{margin-top:8px}
-  .wykresBox h3{font-size:14px;margin:14px 0 4px;color:var(--tekst)}
-  .wykresBox .pod{font-size:12.5px;color:var(--szary);margin:0 0 6px}
-  svg{display:block;width:100%;height:auto;background:var(--surface-1);border:1px solid var(--linia);border-radius:12px}
-  .vtooltip{position:fixed;pointer-events:none;background:#111827;color:#fff;padding:8px 10px;border-radius:8px;font-size:12.5px;line-height:1.35;opacity:0;transition:opacity .1s;z-index:50;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-  /* notatki / status / przypomnienia */
-  .stat{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
-  .stat.do{background:#fbe3d6;color:#a5451c}
-  .stat.zadzwoniono{background:var(--zielony-tlo);color:var(--zielony)}
-  .stat.oddzwonic{background:#fff3d6;color:#8a6100}
-  .stat.umowiono{background:#e0ebfb;color:var(--granat-ciemny)}
-  .stat.zrezygnowal{background:#e9edf2;color:#5b6472}
-  .stat.mail{background:#e8e2fb;color:#4a3aa7}
-  tr.row-zamk td{opacity:.62}
-  .komAkcje{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
-  .umowionyLbl{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--granat-ciemny);cursor:pointer;background:#eef3fc;border:1px solid #cfdcf3;border-radius:8px;padding:3px 9px}
-  .umowionyLbl input{cursor:pointer}
-  .komTd{max-width:260px}
-  .komNotatka{font-size:12.5px;color:var(--tekst);margin-top:4px;white-space:normal;word-break:break-word}
-  .komPrzyp{font-size:12px;color:var(--szary);margin-top:3px}
-  .komPrzyp.pilne{color:var(--czerwony);font-weight:700}
-  .edytujBtn{background:#eef1f6;border:1px solid #d3dbe8;border-radius:8px;padding:4px 9px;font-size:12px;cursor:pointer;margin-top:5px;color:var(--granat-ciemny)}
-  .edytujBtn:hover{background:#e2e8f2}
-  .edytujBtn.dodaj{background:#eef3fc;border-color:#bcd0f0;color:var(--granat);font-weight:600}
-  .edytujBtn.dodaj:hover{background:#e0ebfb}
-  .podw{font-size:12px;color:var(--szary);margin-top:2px;white-space:normal}
-  td .tag{margin-bottom:2px}
+  footer{max-width:1100px;margin:0 auto;padding:6px 22px 40px;color:var(--szary);font-size:12.5px}
+  /* przypomnienia */
   .przypKarta{border-left:4px solid var(--czerwony);background:#fff6f6}
-  .przypLista{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-  .przypWiersz{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--linia);border-radius:10px;background:#fff}
-  .przypWiersz .data{font-weight:700;font-variant-numeric:tabular-nums;min-width:96px}
-  .przypWiersz .data.pilne{color:var(--czerwony)}
-  .przypWiersz .pac{font-weight:600}
-  .przypWiersz .nb{font-size:12.5px;color:var(--szary);flex:1;min-width:120px}
+  .przypWiersz{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--linia);border-radius:10px;background:#fff;margin-top:8px}
+  .przypWiersz .data{font-weight:700;min-width:96px}.przypWiersz .data.pilne{color:var(--czerwony)}
+  .przypWiersz .pac{font-weight:600}.przypWiersz .nb{font-size:12.5px;color:var(--szary);flex:1;min-width:120px}
   .miniBtn{background:#eef1f6;border:1px solid #d3dbe8;border-radius:8px;padding:5px 10px;font-size:12.5px;cursor:pointer;color:var(--granat-ciemny)}
   .miniBtn:hover{background:#e2e8f2}
+  /* login */
+  .loginTlo{position:fixed;inset:0;background:linear-gradient(135deg,#2f5496,#1f3864);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+  .loginTlo.ukryty{display:none}
+  .loginKarta{background:#fff;border-radius:16px;padding:28px;width:min(420px,94vw);box-shadow:0 16px 50px rgba(0,0,0,.35)}
+  .loginKarta h2{margin:0 0 4px;font-size:22px;color:var(--granat-ciemny)}
+  .loginInfo{margin:0 0 18px;color:var(--szary);font-size:14px}
+  .loginKarta .poleM{margin-bottom:14px}
+  .loginKarta label{display:block;font-size:12px;color:var(--szary);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px}
+  .loginKarta input{width:100%;padding:11px 12px;border:1px solid #c7d0e0;border-radius:10px;font-size:15px}
+  .loginBlad{color:var(--czerwony);font-size:13.5px;margin-bottom:10px}
+  .loginStopka{margin:14px 0 0;color:#98a;font-size:12px;line-height:1.5}
+  /* modal */
   .modalTlo{position:fixed;inset:0;background:rgba(15,25,50,.45);display:none;align-items:center;justify-content:center;z-index:100}
   .modalTlo.pokaz{display:flex}
   .modal{background:#fff;border-radius:16px;padding:22px;width:min(520px,92vw);box-shadow:0 12px 40px rgba(0,0,0,.3)}
@@ -148,16 +99,15 @@
   .modal textarea{min-height:90px;resize:vertical}
   .modal .stopka{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap}
   .modal .stopka .odstep{margin-left:auto}
-  .btn.usun{background:#fff;color:var(--czerwony);border:1px solid #f0c4c4}
-  .btn.usun:hover{background:#fdecec}
+  .btn.usun{background:#fff;color:var(--czerwony);border:1px solid #f0c4c4}.btn.usun:hover{background:#fdecec}
 </style>
 </head>
 <body>
 <header>
   <div class="hdrRzad">
     <div>
-      <h1>Panel rezerwacji</h1>
-      <p>Wspólna lista Twoja i wspólniczki — synchronizowana na żywo. Eksporty rezerwacji przetwarzane są lokalnie w przeglądarce; do chmury (Wasz Supabase, serwer w UE) trafia tylko wspólna lista robocza: nazwiska, statusy, notatki i przypomnienia, widoczne tylko po zalogowaniu.</p>
+      <h1>Pacjenci do skontaktowania</h1>
+      <p>Wgraj eksport z Bookero — panel pokaże pacjentów, którzy byli, a nie mają umówionej kolejnej wizyty. Lista jest wspólna (Ty i Jessica) i zapisuje się automatycznie.</p>
     </div>
     <div class="hdrUzyt" id="hdrUzyt" style="display:none">
       <span class="ktoBox">👤 <span id="ktoZalogowany"></span></span>
@@ -166,11 +116,10 @@
   </div>
 </header>
 
-<!-- ekran logowania -->
 <div class="loginTlo" id="loginTlo">
   <form class="loginKarta" id="loginForm">
-    <h2>Panel rezerwacji</h2>
-    <p class="loginInfo">Zaloguj się, aby zobaczyć wspólną listę pacjentów do zadzwonienia.</p>
+    <h2>Pacjenci do skontaktowania</h2>
+    <p class="loginInfo">Zaloguj się, aby zobaczyć wspólną listę.</p>
     <div class="poleM"><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" autocomplete="username" required></div>
     <div class="poleM"><label for="loginHaslo">Hasło</label><input type="password" id="loginHaslo" autocomplete="current-password" required></div>
     <div class="loginBlad" id="loginBlad"></div>
@@ -183,8 +132,8 @@
   <div class="karta">
     <label class="drop" id="drop">
       <input type="file" id="plik" accept=".xls,.xlsx" multiple>
-      <div>📄 <strong>Kliknij i wybierz pliki</strong> albo przeciągnij tutaj eksporty rezerwacji</div>
-      <div class="maly">Kilka plików naraz (różne miesiące) — łączone, duplikaty rezerwacji usuwane. Formaty: .xls / .xlsx</div>
+      <div>📄 <strong>Kliknij i wybierz plik z Bookero</strong> albo przeciągnij tutaj</div>
+      <div class="maly">Możesz wgrać kilka plików naraz (różne miesiące) — łączone, duplikaty usuwane. Formaty: .xls / .xlsx</div>
     </label>
     <div id="listaPlikow" class="listaPlikow ukryty"></div>
     <div class="rzad">
@@ -192,189 +141,71 @@
         <label for="data">Dzień odniesienia („dziś")</label>
         <input type="date" id="data">
       </div>
+      <label class="chk"><input type="checkbox" id="pomijBezpl"> Pomiń bezpłatne konsultacje</label>
       <button class="btn szary" id="wyczysc">Wyczyść pliki</button>
-      <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:14px;cursor:pointer"><input type="checkbox" id="pomijBezpl"> Pomiń bezpłatne konsultacje</label>
-      <span id="statusPlikow" class="maly" style="color:var(--szary)"></span>
     </div>
+    <div class="podsum" id="podsum"></div>
     <div id="blad" class="blad ukryty"></div>
   </div>
 
-  <div id="wyniki" class="ukryty">
-    <div class="taby">
-      <button class="tab akt" data-tab="lista">📞 Do zadzwonienia</button>
-      <button class="tab" data-tab="trendy">📈 Trendy miesięczne</button>
-      <button class="tab" data-tab="duplikaty">🔎 Możliwe duplikaty <span id="dupBadge"></span></button>
+  <div class="karta przypKarta ukryty" id="przypKarta">
+    <div class="naglowek-sekcji"><h2>⏰ Przypomnienia o telefonie</h2><span class="licznik" id="przypLicznik"></span>
+      <div class="akcje"><label class="chk" style="font-size:13.5px"><input type="checkbox" id="przypWszystkie"> Pokaż też przyszłe</label></div></div>
+    <div id="przypLista"></div>
+  </div>
+
+  <div class="karta" id="listaKarta">
+    <div class="naglowek-sekcji">
+      <h2>Lista do skontaktowania</h2>
+      <span class="licznik" id="licznik"></span>
+      <div class="akcje">
+        <button class="btn pobierz" id="pobierz">⬇ Pobierz Excel</button>
+      </div>
     </div>
-
-    <!-- ============ ZAKŁADKA 1: DO ZADZWONIENIA ============ -->
-    <section id="sek-lista">
-      <div class="karta">
-        <div class="zakres" id="zakres"></div>
-        <div class="kafle">
-          <div class="kafel"><div class="num" id="k-przeszli">0</div><div class="opis">Pacjentów z wizytą w przeszłości</div></div>
-          <div class="kafel"><div class="num" id="k-umowieni">0</div><div class="opis">Umówionych w bież. + przysz. tyg.</div></div>
-          <div class="kafel alarm"><div class="num" id="k-dzwonic">0</div><div class="opis">Do zadzwonienia</div></div>
-          <div class="kafel alarm"><div class="num" id="k-bezprzysz">0</div><div class="opis">…w tym bez żadnej przyszłej wizyty</div></div>
-        </div>
-      </div>
-      <div class="karta przypKarta ukryty" id="przypKarta">
-        <div class="naglowek-sekcji">
-          <h2>⏰ Przypomnienia o telefonie</h2>
-          <span class="licznik" id="przypLicznik"></span>
-          <div class="akcje">
-            <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer"><input type="checkbox" id="przypWszystkie"> Pokaż też przyszłe</label>
-          </div>
-        </div>
-        <div class="przypLista" id="przypLista"></div>
-      </div>
-
-      <div class="karta">
-        <div class="naglowek-sekcji">
-          <h2>Pacjenci do zadzwonienia</h2>
-          <span class="licznik" id="licznik"></span>
-          <div class="akcje">
-            <button class="btn szary" id="kopiaZapis" title="Zapisz kopię notatek i przypomnień do pliku">💾 Kopia</button>
-            <button class="btn szary" id="kopiaWczytaj" title="Wczytaj notatki i przypomnienia z pliku kopii">📥 Wczytaj</button>
-            <input type="file" id="kopiaPlik" accept=".json" style="display:none">
-            <button class="btn szary" id="reset">Wyczyść filtry</button>
-            <button class="btn pobierz" id="pobierz">⬇ Pobierz Excel</button>
-          </div>
-        </div>
-        <div class="filtry">
-          <div class="pole grupa-przysz">
-            <label for="f-przysz">★ Przyszła wizyta</label>
-            <select id="f-przysz">
-              <option value="wsz">Wszyscy do zadzwonienia</option>
-              <option value="bez">Tylko BEZ żadnej przyszłej wizyty</option>
-              <option value="ma">Tylko z wizytą (poza 2 tyg.)</option>
-            </select>
-          </div>
-          <div class="pole"><label for="szukaj">Pacjent</label><input type="text" id="szukaj" placeholder="🔍 nazwisko..."></div>
-          <div class="pole"><label for="f-status">Status kontaktu</label><select id="f-status">
-            <option value="">— wszystkie —</option>
-            <option value="do">Do zadzwonienia</option>
-            <option value="zadzwoniono">Zadzwoniono</option>
-            <option value="mail">Wysłano maila</option>
-            <option value="oddzwonic">Oddzwonić</option>
-            <option value="umowiono">Umówiono</option>
-            <option value="zrezygnowal">Zrezygnował</option>
-          </select></div>
-          <div class="pole" style="align-self:center"><label>&nbsp;</label><label class="chk" style="display:flex;align-items:center;gap:7px;font-size:14px;cursor:pointer;white-space:nowrap"><input type="checkbox" id="pokazZamkniete"> Pokaż też zamknięte</label></div>
-          <div class="pole"><label for="f-terap">Terapeuta</label><select id="f-terap"><option value="">— wszyscy —</option></select></div>
-          <div class="pole"><label for="f-usluga">Usługa</label><select id="f-usluga"><option value="">— wszystkie —</option></select></div>
-          <div class="pole"><label for="f-minwiz">Min. wizyt</label><input type="number" id="f-minwiz" min="1" value="1" style="width:90px"></div>
-          <div class="pole"><label for="f-od">Ost. wizyta od</label><input type="date" id="f-od"></div>
-          <div class="pole"><label for="f-do">Ost. wizyta do</label><input type="date" id="f-do"></div>
-        </div>
-        <p class="pod" style="margin:0 0 10px">💡 Pacjent z notatką lub statusem zostaje na liście także po wgraniu nowego pliku — schodzi z niej dopiero, gdy ustawisz status <b>„Umówiono"</b> lub <b>„Zrezygnował"</b>. Zamknięte podejrzysz zaznaczając „Pokaż też zamknięte".</p>
-        <div class="subnagl"><h3>📌 Moja lista robocza</h3><span class="licznik" id="licznikMoja"></span>
-          <span class="podpis">— pacjenci z notatką/statusem; zostają tu mimo wgrywania nowych plików</span></div>
-        <div class="tabwrap">
-          <table><thead><tr id="thead-moja"></tr></thead><tbody id="tbodyMoja"></tbody></table>
-        </div>
-        <div id="pustoMoja" class="pusto ukryty">Twoja lista robocza jest pusta — dodaj komuś notatkę lub status z sekcji „Nowi" poniżej, a przeniesie się tutaj.</div>
-
-        <div class="subnagl" style="margin-top:20px"><h3>🆕 Nowi z wgranego pliku</h3><span class="licznik" id="licznikNowi"></span>
-          <span class="podpis">— świeżo policzeni z ostatniego pliku, jeszcze bez notatki (nie mieszają się z Twoją listą)</span></div>
-        <div class="tabwrap">
-          <table><thead><tr id="thead-nowi"></tr></thead><tbody id="tbodyNowi"></tbody></table>
-        </div>
-        <div id="pustoNowi" class="pusto ukryty">Brak nowych pacjentów z wgranego pliku (poza tymi już na Twojej liście).</div>
-      </div>
-    </section>
-
-    <!-- ============ ZAKŁADKA 2: TRENDY MIESIĘCZNE ============ -->
-    <section id="sek-trendy" class="ukryty">
-      <div class="karta">
-        <div class="naglowek-sekcji">
-          <h2>Porównanie miesiąc do miesiąca</h2>
-          <span class="licznik" id="trendZakres"></span>
-        </div>
-        <div class="kpiRzad" id="kpiRzad"></div>
-        <div class="cel" id="celWizyty"></div>
-        <div class="cel" id="celFinanse"></div>
-      </div>
-
-      <div class="karta">
-        <div class="wykresBox">
-          <h3>Liczba wizyt w miesiącu</h3>
-          <p class="pod">Słupki = rezerwacje w danym miesiącu. Etykieta nad słupkiem to zmiana względem poprzedniego miesiąca.</p>
-          <div id="wykresWizyty"></div>
-        </div>
-        <div class="wykresBox">
-          <h3>Przychód w miesiącu (zł)</h3>
-          <p class="pod">Suma z kolumny „Płatność". Etykieta nad słupkiem to zmiana względem poprzedniego miesiąca.</p>
-          <div id="wykresFinanse"></div>
-        </div>
-      </div>
-
-      <div class="karta">
-        <div class="naglowek-sekcji"><h2>Tabela miesięczna</h2></div>
-        <div class="tabwrap">
-          <table><thead><tr>
-            <th>Miesiąc</th><th style="text-align:right">Wizyty</th><th style="text-align:right">Zmiana wizyt</th>
-            <th style="text-align:right">Przychód (zł)</th><th style="text-align:right">Zmiana przychodu</th>
-            <th style="text-align:right">Śr. na wizytę</th>
-          </tr></thead><tbody id="tbodyMies"></tbody></table>
-        </div>
-        <p class="pod" style="margin-top:10px">Uwaga: bieżący miesiąc może być jeszcze niepełny — liczby rosną w miarę dochodzenia nowych rezerwacji.</p>
-      </div>
-    </section>
-
-    <!-- ============ ZAKŁADKA 3: MOŻLIWE DUPLIKATY ============ -->
-    <section id="sek-duplikaty" class="ukryty">
-      <div class="karta">
-        <div class="naglowek-sekcji">
-          <h2>🔎 Możliwe duplikaty nazwisk</h2>
-          <span class="licznik" id="dupLicznik"></span>
-        </div>
-        <p class="pod">Panel sam scala różne pisownie tego samego nazwiska (polskie znaki, wielkość liter, spacje). Poniżej pary, których <b>nie</b> scala automatycznie, bo mogłyby to być dwie różne osoby — warto je przejrzeć i ewentualnie ujednolicić w systemie rezerwacji. Pary oznaczone <span class="tag nie">wpływa na listę</span> są najważniejsze — przez rozjazd w pisowni ktoś może niesłusznie trafiać (lub nie) na listę do dzwonienia.</p>
-        <div class="tabwrap">
-          <table><thead><tr>
-            <th>Nazwisko A</th><th style="text-align:center">Wizyt A</th>
-            <th>Nazwisko B</th><th style="text-align:center">Wizyt B</th>
-            <th>Powód</th><th>Wpływ na listę</th>
-          </tr></thead><tbody id="tbodyDup"></tbody></table>
-        </div>
-        <div id="dupPusto" class="pusto ukryty">✅ Nie wykryto podejrzanych par nazwisk.</div>
-      </div>
-    </section>
+    <div class="filtry">
+      <div class="pole"><label for="szukaj">Szukaj pacjenta</label><input type="text" id="szukaj" placeholder="🔍 nazwisko..."></div>
+      <div class="pole"><label for="fStatus">Status kontaktu</label><select id="fStatus">
+        <option value="">— wszystkie aktywne —</option>
+        <option value="do">Do zadzwonienia</option>
+        <option value="zadzwoniono">Zadzwoniono</option>
+        <option value="mail">Wysłano maila</option>
+        <option value="oddzwonic">Oddzwonić</option>
+      </select></div>
+      <label class="chk"><input type="checkbox" id="pokazZalatwione"> Pokaż też załatwionych (umówieni/zrezygnowali)</label>
+    </div>
+    <div class="tabwrap">
+      <table><thead><tr>
+        <th>Pacjent</th><th>Status kontaktu / notatka</th><th></th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div id="pusto" class="pusto">Wgraj plik z Bookero, aby zobaczyć listę pacjentów do skontaktowania.</div>
   </div>
 </main>
 
 <footer>
-  Eksporty rezerwacji przetwarzane są lokalnie w Twojej przeglądarce. Wspólna lista robocza (nazwiska, statusy, notatki, przypomnienia) jest zapisywana w Waszym Supabase (serwer w UE) i widoczna tylko po zalogowaniu — dzięki temu Ty i wspólniczka pracujecie na jednej, aktualnej liście.
+  Eksport z Bookero przetwarzany jest lokalnie w przeglądarce. Wspólna lista (nazwiska, statusy, notatki, przypomnienia) zapisywana jest w Waszym Supabase (serwer w UE) i widoczna tylko po zalogowaniu — dzięki temu Ty i Jessica pracujecie na jednej, aktualnej liście.
 </footer>
-<div class="vtooltip" id="vtip"></div>
 
-<!-- modal notatki / status / przypomnienie -->
+<!-- modal -->
 <div class="modalTlo" id="modalTlo">
   <div class="modal">
     <h3>Notatka i przypomnienie</h3>
     <div class="kto" id="modalKto"></div>
-    <div class="poleM">
-      <label for="mStatus">Status kontaktu</label>
+    <div class="poleM"><label for="mStatus">Status kontaktu</label>
       <select id="mStatus">
         <option value="do">Do zadzwonienia</option>
         <option value="zadzwoniono">Zadzwoniono</option>
         <option value="mail">Wysłano maila</option>
         <option value="oddzwonic">Oddzwonić</option>
-        <option value="umowiono">Umówiono (zamyka — schodzi z listy)</option>
-        <option value="zrezygnowal">Zrezygnował (zamyka — schodzi z listy)</option>
-      </select>
-    </div>
-    <div class="poleM">
-      <label for="mPrzyp">Przypomnij zadzwonić (data)</label>
-      <input type="date" id="mPrzyp">
-    </div>
-    <div class="poleM">
-      <label for="mNotatka">Notatka</label>
-      <textarea id="mNotatka" placeholder="np. woli po 16:00, prosiła oddzwonić w przyszłym tygodniu..."></textarea>
-    </div>
+        <option value="umowiono">Umówiony (schodzi z listy)</option>
+        <option value="zrezygnowal">Zrezygnował (schodzi z listy)</option>
+      </select></div>
+    <div class="poleM"><label for="mPrzyp">Przypomnij zadzwonić (data)</label><input type="date" id="mPrzyp"></div>
+    <div class="poleM"><label for="mNotatka">Notatka</label><textarea id="mNotatka" placeholder="np. woli po 16:00, oddzwonić w przyszłym tygodniu..."></textarea></div>
     <div class="stopka">
-      <button class="btn usun" id="mUsun">Wyczyść</button>
+      <button class="btn usun" id="mUsun">Usuń z listy</button>
       <button class="miniBtn" id="mGoogle">📅 Google Kalendarz</button>
-      <button class="miniBtn" id="mKalendarz">📥 Plik .ics (Apple/Outlook)</button>
+      <button class="miniBtn" id="mKalendarz">📥 .ics</button>
       <span class="odstep"></span>
       <button class="btn szary" id="mAnuluj">Anuluj</button>
       <button class="btn" id="mZapisz">Zapisz</button>
@@ -418,163 +249,92 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 `);let e=await s.signMessage(new TextEncoder().encode(t),`utf8`);if(!e||!(e instanceof Uint8Array))throw Error(`@supabase/auth-js: Wallet signMessage() API returned an recognized value`);n=e}}try{let{data:r,error:i}=await Y(this.fetch,`POST`,`${this.url}/token?grant_type=web3`,{headers:this.headers,body:Object.assign({chain:`solana`,message:t,signature:B(n)},e.options?.captchaToken?{gotrue_meta_security:{captcha_token:e.options?.captchaToken}}:null),xform:X});if(i)throw i;if(!r||!r.session||!r.user){let e=new z;return this._returnResult({data:{user:null,session:null},error:e})}return r.session&&(await this._saveSession(r.session),await this._notifyAllSubscribers(`SIGNED_IN`,r.session)),this._returnResult({data:Object.assign({},r),error:i})}catch(e){if(F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async _exchangeCodeForSession(e,t){let n=t?.flowId!=null,r=n?Hr(t?.flowId):V()?Hr(Ar(window.location.href)[N]):null;n&&!r&&this._debug(`#_exchangeCodeForSession()`,`provided flowId is not a valid flow id`,t?.flowId);let{verifier:i,flowId:a}=n&&!r?{verifier:null,flowId:null}:await Jr(this.storage,this.storageKey,r),[o,s]=(i??``).split(`/`);try{if(!o&&this.flowType===`pkce`)throw new sr;let{data:t,error:n}=await Y(this.fetch,`POST`,`${this.url}/token?grant_type=pkce`,{headers:this.headers,body:{auth_code:e,code_verifier:o},xform:X});if(await K(this.storage,this.storageKey,a),n)throw n;if(!t||!t.session||!t.user){let e=new z;return this._returnResult({data:{user:null,session:null,redirectType:null},error:e})}return t.session&&(await this._saveSession(t.session),await this._notifyAllSubscribers(s===`recovery`?`PASSWORD_RECOVERY`:`SIGNED_IN`,t.session)),this._returnResult({data:Object.assign(Object.assign({},t),{redirectType:s??null}),error:n})}catch(e){if(await K(this.storage,this.storageKey,a),F(e))return this._returnResult({data:{user:null,session:null,redirectType:null},error:e});throw e}}async signInWithIdToken(e){try{let{options:t,provider:n,token:r,access_token:i,nonce:a}=e,{data:o,error:s}=await Y(this.fetch,`POST`,`${this.url}/token?grant_type=id_token`,{headers:this.headers,body:{provider:n,id_token:r,access_token:i,nonce:a,gotrue_meta_security:{captcha_token:t?.captchaToken}},xform:X});if(s)return this._returnResult({data:{user:null,session:null},error:s});if(!o||!o.session||!o.user){let e=new z;return this._returnResult({data:{user:null,session:null},error:e})}return o.session&&(await this._saveSession(o.session),await this._notifyAllSubscribers(`SIGNED_IN`,o.session)),this._returnResult({data:o,error:s})}catch(e){if(F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async signInWithOtp(e){let t=null;try{if(`email`in e){let{email:n,options:r}=e,i=null,a=null;this.flowType===`pkce`&&([i,a,t]=await this._getCodeChallengeAndMethod());let{error:o}=await Y(this.fetch,`POST`,`${this.url}/otp`,{headers:this.headers,body:{email:n,data:r?.data??{},create_user:r?.shouldCreateUser??!0,gotrue_meta_security:{captcha_token:r?.captchaToken},code_challenge:i,code_challenge_method:a},redirectTo:this._maybeAppendFlowIdToRedirect(r?.emailRedirectTo,t)});return this._returnResult({data:{user:null,session:null},error:o})}if(`phone`in e){let{phone:t,options:n}=e,{data:r,error:i}=await Y(this.fetch,`POST`,`${this.url}/otp`,{headers:this.headers,body:{phone:t,data:n?.data??{},create_user:n?.shouldCreateUser??!0,gotrue_meta_security:{captcha_token:n?.captchaToken},channel:n?.channel??`sms`}});return this._returnResult({data:{user:null,session:null,messageId:r?.message_id},error:i})}throw new rr(`You must provide either an email or phone number.`)}catch(e){if(await K(this.storage,this.storageKey,t),F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async verifyOtp(e){try{let t,n;`options`in e&&(t=e.options?.redirectTo,n=e.options?.captchaToken);let{data:r,error:i}=await Y(this.fetch,`POST`,`${this.url}/verify`,{headers:this.headers,body:Object.assign(Object.assign({},e),{gotrue_meta_security:{captcha_token:n}}),redirectTo:t,xform:X});if(i)throw i;if(!r)throw Error(`An error occurred on token verification.`);let a=r.session,o=r.user;return a?.access_token&&(await this._saveSession(a),await this._notifyAllSubscribers(e.type==`recovery`?`PASSWORD_RECOVERY`:`SIGNED_IN`,a)),this._returnResult({data:{user:o,session:a},error:null})}catch(e){if(F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async signInWithSSO(e){let t=null;try{let n=null,r=null;this.flowType===`pkce`&&([n,r,t]=await this._getCodeChallengeAndMethod());let i=await Y(this.fetch,`POST`,`${this.url}/sso`,{body:Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({},`providerId`in e?{provider_id:e.providerId}:null),`domain`in e?{domain:e.domain}:null),{redirect_to:this._maybeAppendFlowIdToRedirect(e.options?.redirectTo,t)}),e?.options?.captchaToken?{gotrue_meta_security:{captcha_token:e.options.captchaToken}}:null),{skip_http_redirect:!0,code_challenge:n,code_challenge_method:r}),headers:this.headers,xform:fi});return i.data?.url&&V()&&!e.options?.skipBrowserRedirect&&window.location.assign(i.data.url),this._returnResult(i)}catch(e){if(await K(this.storage,this.storageKey,t),F(e))return this._returnResult({data:null,error:e});throw e}}async reauthenticate(){return await this.initializePromise,this.lock==null?await this._reauthenticate():await this._acquireLock(this.lockAcquireTimeout,async()=>await this._reauthenticate())}async _reauthenticate(){try{return await this._useSession(async e=>{let{data:{session:t},error:n}=e;if(n)throw n;if(!t)throw new R;let{error:r}=await Y(this.fetch,`GET`,`${this.url}/reauthenticate`,{headers:this.headers,jwt:t.access_token});return this._returnResult({data:{user:null,session:null},error:r})})}catch(e){if(F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async resend(e){let t=null;try{let n=`${this.url}/resend`;if(`email`in e){let{email:r,type:i,options:a}=e,o=null,s=null;this.flowType===`pkce`&&([o,s,t]=await this._getCodeChallengeAndMethod());let{error:c}=await Y(this.fetch,`POST`,n,{headers:this.headers,body:{email:r,type:i,gotrue_meta_security:{captcha_token:a?.captchaToken},code_challenge:o,code_challenge_method:s},redirectTo:this._maybeAppendFlowIdToRedirect(a?.emailRedirectTo,t)});return c&&await K(this.storage,this.storageKey,t),this._returnResult({data:{user:null,session:null},error:c})}else if(`phone`in e){let{phone:t,type:r,options:i}=e,{data:a,error:o}=await Y(this.fetch,`POST`,n,{headers:this.headers,body:{phone:t,type:r,gotrue_meta_security:{captcha_token:i?.captchaToken}}});return this._returnResult({data:{user:null,session:null,messageId:a?.message_id},error:o})}throw new rr(`You must provide either an email or phone number and a type`)}catch(e){if(await K(this.storage,this.storageKey,t),F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async getSession(){return await this.initializePromise,this.lock==null?await this._useSession(async e=>e):await this._acquireLock(this.lockAcquireTimeout,async()=>this._useSession(async e=>e))}async _acquireLock(e,t){this._debug(`#_acquireLock`,`begin`,e);try{if(this.lockAcquired){let e=this.pendingInLock.length?this.pendingInLock[this.pendingInLock.length-1]:Promise.resolve(),n=(async()=>(await e,await t()))();return this.pendingInLock.push((async()=>{try{await n}catch{}})()),n}return await this.lock(`lock:${this.storageKey}`,e,async()=>{this._debug(`#_acquireLock`,`lock acquired for storage key`,this.storageKey);try{this.lockAcquired=!0;let e=t();for(this.pendingInLock.push((async()=>{try{await e}catch{}})()),await e;this.pendingInLock.length;){let e=[...this.pendingInLock];await Promise.all(e),this.pendingInLock.splice(0,e.length)}return await e}finally{this._debug(`#_acquireLock`,`lock released for storage key`,this.storageKey),this.lockAcquired=!1}})}finally{this._debug(`#_acquireLock`,`end`)}}async _useSession(e){this._debug(`#_useSession`,`begin`);try{return await e(await this.__loadSession())}finally{this._debug(`#_useSession`,`end`)}}async __loadSession(){this._debug(`#__loadSession()`,`begin`),this.lock!=null&&!this.lockAcquired&&this._debug(`#__loadSession()`,`used outside of an acquired lock!`,Error().stack);try{let e=null,t=await W(this.storage,this.storageKey);if(this._debug(`#getSession()`,`session from storage`,t),t!==null&&(this._isValidSession(t)?e=t:(this._debug(`#getSession()`,`session from storage is not valid`),await this._removeSession())),!e)return{data:{session:null},error:null};let n=e.expires_at?e.expires_at*1e3-Date.now()<Yn:!1;if(this._debug(`#__loadSession()`,`session has${n?``:` not`} expired`,`expires_at`,e.expires_at),!n)return{data:{session:await this._hydrateSessionUser(e)},error:null};let{data:r,error:i}=await this._callRefreshToken(e.refresh_token);if(i){let e=await W(this.storage,this.storageKey);return e&&this._isValidSession(e)&&e.expires_at&&e.expires_at*1e3>Date.now()?this._returnResult({data:{session:await this._hydrateSessionUser(e)},error:null}):this._returnResult({data:{session:null},error:i})}return this._returnResult({data:{session:r},error:null})}finally{this._debug(`#__loadSession()`,`end`)}}async _hydrateSessionUser(e){if(this.userStorage){let t=await W(this.userStorage,this.storageKey+`-user`);e.user=t?.user?t.user:ii()}if(this.storage.isServer&&e.user&&!e.user.__isUserNotAvailableProxy){let t={value:this.suppressGetSessionWarning};e.user=ai(e.user,t),t.value&&(this.suppressGetSessionWarning=!0)}return e}async getUser(e){if(e)return await this._getUser(e);await this.initializePromise;let t;return t=this.lock==null?await this._getUser():await this._acquireLock(this.lockAcquireTimeout,async()=>await this._getUser()),t.data.user&&(this.suppressGetSessionWarning=!0),t}async _getUser(e){try{return e?await Y(this.fetch,`GET`,`${this.url}/user`,{headers:this.headers,jwt:e,xform:Z}):await this._useSession(async e=>{let{data:t,error:n}=e;if(n)throw n;return!t.session?.access_token&&!this.hasCustomAuthorizationHeader?{data:{user:null},error:new R}:await Y(this.fetch,`GET`,`${this.url}/user`,{headers:this.headers,jwt:t.session?.access_token??void 0,xform:Z})})}catch(e){if(F(e))return nr(e)&&await this._removeSession(),this._returnResult({data:{user:null},error:e});throw e}}async updateUser(e,t={}){return await this.initializePromise,this.lock==null?await this._updateUser(e,t):await this._acquireLock(this.lockAcquireTimeout,async()=>await this._updateUser(e,t))}async _updateUser(e,t={}){let n=null;try{return await this._useSession(async r=>{let{data:i,error:a}=r;if(a)throw a;if(!i.session)throw new R;let o=i.session,s=null,c=null;this.flowType===`pkce`&&e.email!=null&&([s,c,n]=await this._getCodeChallengeAndMethod());let{data:l,error:u}=await Y(this.fetch,`PUT`,`${this.url}/user`,{headers:this.headers,redirectTo:this._maybeAppendFlowIdToRedirect(t?.emailRedirectTo,n),body:Object.assign(Object.assign({},e),{code_challenge:s,code_challenge_method:c}),jwt:o.access_token,xform:Z});if(u)throw u;return o.user=l.user,await this._saveSession(o),await this._notifyAllSubscribers(`USER_UPDATED`,o),this._returnResult({data:{user:o.user},error:null})})}catch(e){if(await K(this.storage,this.storageKey,n),F(e))return this._returnResult({data:{user:null},error:e});throw e}}async setSession(e){return await this.initializePromise,this.lock==null?await this._setSession(e):await this._acquireLock(this.lockAcquireTimeout,async()=>await this._setSession(e))}async _setSession(e){try{if(!e.access_token||!e.refresh_token)throw new R;let t=Date.now()/1e3,n=t,r=!0,i=null,{payload:a}=Pr(e.access_token);if(a.exp&&(n=a.exp,r=n<=t),r){let{data:t,error:n}=await this._callRefreshToken(e.refresh_token);if(n)return this._returnResult({data:{user:null,session:null},error:n});if(!t)return{data:{user:null,session:null},error:null};i=t}else{let{data:r,error:a}=await this._getUser(e.access_token);if(a)return this._returnResult({data:{user:null,session:null},error:a});i={access_token:e.access_token,refresh_token:e.refresh_token,user:r.user,token_type:`bearer`,expires_in:n-t,expires_at:n},await this._saveSession(i),await this._notifyAllSubscribers(`SIGNED_IN`,i)}return this._returnResult({data:{user:i.user,session:i},error:null})}catch(e){if(F(e))return this._returnResult({data:{session:null,user:null},error:e});throw e}}async refreshSession(e){return await this.initializePromise,this.lock==null?await this._refreshSession(e):await this._acquireLock(this.lockAcquireTimeout,async()=>await this._refreshSession(e))}async _refreshSession(e){try{return await this._useSession(async t=>{if(!e){let{data:n,error:r}=t;if(r)throw r;e=n.session??void 0}if(!e?.refresh_token)throw new R;let{data:n,error:r}=await this._callRefreshToken(e.refresh_token);return r?this._returnResult({data:{user:null,session:null},error:r}):n?this._returnResult({data:{user:n.user,session:n},error:null}):this._returnResult({data:{user:null,session:null},error:null})})}catch(e){if(F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}}async _getSessionFromURL(e,t){try{if(!V())throw new ir(`No browser detected.`);if(e.error||e.error_description||e.error_code)throw new ir(e.error_description||`Error in URL with unspecified error_description`,{error:e.error||`unspecified_error`,code:e.error_code||`unspecified_code`});switch(t){case`implicit`:if(this.flowType===`pkce`)throw new or(`Not a valid PKCE flow url.`);break;case`pkce`:if(this.flowType===`implicit`)throw new ir(`Not a valid implicit grant flow url.`);break;default:}if(t===`pkce`){if(this._debug(`#_initialize()`,`begin`,`is PKCE flow`,!0),!e.code)throw new or(`No code detected.`);let{data:t,error:n}=await this._exchangeCodeForSession(e.code,{flowId:e[N]});if(n)throw n;let r=new URL(window.location.href);return r.searchParams.delete(`code`),r.searchParams.delete(N),window.history.replaceState(window.history.state,``,r.toString()),{data:{session:t.session,redirectType:t.redirectType??null},error:null}}let{provider_token:n,provider_refresh_token:r,access_token:i,refresh_token:a,expires_in:o,expires_at:s,token_type:c}=e;if(!i||!o||!a||!c)throw new ir(`No session defined in URL`);let l=Math.round(Date.now()/1e3),u=parseInt(o),d=l+u;s&&(d=parseInt(s));let f=d-l;f*1e3<=M&&console.warn(`@supabase/gotrue-js: Session as retrieved from URL expires in ${f}s, should have been closer to ${u}s`);let p=d-u;l-p>=120?console.warn(`@supabase/gotrue-js: Session as retrieved from URL was issued over 120s ago, URL could be stale`,p,d,l):l-p<0&&console.warn(`@supabase/gotrue-js: Session as retrieved from URL was issued in the future? Check the device clock for skew`,p,d,l);let{data:m,error:h}=await this._getUser(i);if(h)throw h;let g={provider_token:n,provider_refresh_token:r,access_token:i,expires_in:u,expires_at:d,refresh_token:a,token_type:c,user:m.user};return window.location.hash=``,this._debug(`#_getSessionFromURL()`,`clearing window.location.hash`),this._returnResult({data:{session:g,redirectType:e.type},error:null})}catch(e){if(F(e))return this._returnResult({data:{session:null,redirectType:null},error:e});throw e}}_isImplicitGrantCallback(e){return typeof this.detectSessionInUrl==`function`?this.detectSessionInUrl(new URL(window.location.href),e):!!(e.access_token||e.error||e.error_description||e.error_code)}async _isPKCECallback(e){if(!e.code)return!1;let t=Hr(e[N]);return t&&await W(this.storage,Wr(this.storageKey,t))?!0:!!await W(this.storage,`${this.storageKey}-code-verifier`)}async signOut(e={scope:`global`}){return await this.initializePromise,this.lock==null?await this._signOut(e):await this._acquireLock(this.lockAcquireTimeout,async()=>await this._signOut(e))}async _signOut({scope:e=`global`}={}){return await this._useSession(async t=>{let n=async()=>{await this._removeSession()},{data:r,error:i}=t;if(i&&!nr(i))return e===`local`&&ur(i)&&await n(),this._returnResult({error:i});let a=r.session?.access_token,o=null,s=e=>{if(o)throw o.thrown;return e};if(e===`local`)try{await n()}catch(e){o={thrown:e}}if(a){let{error:t}=await this.admin.signOut(a,e);if(t&&!(tr(t)&&(t.status===404||t.status===401||t.status===403)||nr(t)))return s(this._returnResult({error:t}))}return e===`global`&&await n(),s(this._returnResult({error:null}))})}onAuthStateChange(e){let t=Or(),n={id:t,callback:e,unsubscribe:()=>{this._debug(`#unsubscribe()`,`state change callback with id removed`,t),this.stateChangeEmitters.delete(t)}};return this._debug(`#onAuthStateChange()`,`registered callback with id`,t),this.stateChangeEmitters.set(t,n),(async()=>{await this.initializePromise,this.lock==null?await this._emitInitialSession(t):await this._acquireLock(this.lockAcquireTimeout,async()=>{this._emitInitialSession(t)})})(),{data:{subscription:n}}}async _emitInitialSession(e){return await this._useSession(async t=>{try{let{data:{session:n},error:r}=t;if(r)throw r;await this.stateChangeEmitters.get(e)?.callback(`INITIAL_SESSION`,n),this._debug(`INITIAL_SESSION`,`callback id`,e,`session`,n)}catch(t){if(await this.stateChangeEmitters.get(e)?.callback(`INITIAL_SESSION`,null),this._debug(`INITIAL_SESSION`,`callback id`,e,`error`,t),fr(t))return;nr(t)||ur(t)||tr(t)&&(t.code===`refresh_token_not_found`||t.code===`refresh_token_already_used`||t.code===`session_expired`)?console.warn(t):console.error(t)}})}async resetPasswordForEmail(e,t={}){let n=null,r=null,i=null;this.flowType===`pkce`&&([n,r,i]=await this._getCodeChallengeAndMethod(!0));try{return await Y(this.fetch,`POST`,`${this.url}/recover`,{body:{email:e,code_challenge:n,code_challenge_method:r,gotrue_meta_security:{captcha_token:t.captchaToken}},headers:this.headers,redirectTo:this._maybeAppendFlowIdToRedirect(t.redirectTo,i)})}catch(e){if(await K(this.storage,this.storageKey,i),F(e))return this._returnResult({data:null,error:e});throw e}}async getUserIdentities(){try{let{data:e,error:t}=await this.getUser();if(t)throw t;return this._returnResult({data:{identities:e.user.identities??[]},error:null})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async linkIdentity(e){return`token`in e?this.linkIdentityIdToken(e):this.linkIdentityOAuth(e)}async linkIdentityOAuth(e){let t=null;try{let{data:n,error:r}=await this._useSession(async n=>{let{data:r,error:i}=n;if(i)throw i;let{url:a,flowId:o}=await this._getUrlForProvider(`${this.url}/user/identities/authorize`,e.provider,{redirectTo:e.options?.redirectTo,scopes:e.options?.scopes,queryParams:e.options?.queryParams,skipBrowserRedirect:!0});return t=o,await Y(this.fetch,`GET`,a,{headers:this.headers,jwt:r.session?.access_token??void 0})});if(r)throw r;return V()&&!e.options?.skipBrowserRedirect&&window.location.assign(n?.url),this._returnResult({data:{provider:e.provider,url:n?.url,flowId:t},error:null})}catch(n){if(F(n))return this._returnResult({data:{provider:e.provider,url:null,flowId:t},error:n});throw n}}async linkIdentityIdToken(e){return await this._useSession(async t=>{try{let{error:n,data:{session:r}}=t;if(n)throw n;let{options:i,provider:a,token:o,access_token:s,nonce:c}=e,{data:l,error:u}=await Y(this.fetch,`POST`,`${this.url}/token?grant_type=id_token`,{headers:this.headers,jwt:r?.access_token??void 0,body:{provider:a,id_token:o,access_token:s,nonce:c,link_identity:!0,gotrue_meta_security:{captcha_token:i?.captchaToken}},xform:X});return u?this._returnResult({data:{user:null,session:null},error:u}):!l||!l.session||!l.user?this._returnResult({data:{user:null,session:null},error:new z}):(l.session&&(await this._saveSession(l.session),await this._notifyAllSubscribers(`USER_UPDATED`,l.session)),this._returnResult({data:l,error:u}))}catch(e){if(await K(this.storage,this.storageKey,null),F(e))return this._returnResult({data:{user:null,session:null},error:e});throw e}})}async unlinkIdentity(e){try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)throw r;return await Y(this.fetch,`DELETE`,`${this.url}/user/identities/${e.identity_id}`,{headers:this.headers,jwt:n.session?.access_token??void 0})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _refreshAccessToken(e){let t=`#_refreshAccessToken()`;this._debug(t,`begin`);try{let n=Date.now();return await Ir(async n=>(n>0&&await Fr(200*2**(n-1)),this._debug(t,`refreshing attempt`,n),await Y(this.fetch,`POST`,`${this.url}/token?grant_type=refresh_token`,{body:{refresh_token:e},headers:this.headers,xform:X})),(e,t)=>{let r=200*2**e;return t&&ur(t)&&Date.now()+r-n<M})}catch(e){if(this._debug(t,`error`,e),F(e))return this._returnResult({data:{session:null,user:null},error:e});throw e}finally{this._debug(t,`end`)}}_isValidSession(e){return typeof e==`object`&&!!e&&`access_token`in e&&`refresh_token`in e&&`expires_at`in e}async _handleProviderSignIn(e,t){let{url:n,flowId:r}=await this._getUrlForProvider(`${this.url}/authorize`,e,{redirectTo:t.redirectTo,scopes:t.scopes,queryParams:t.queryParams});return this._debug(`#_handleProviderSignIn()`,`provider`,e,`options`,t,`url`,n),V()&&!t.skipBrowserRedirect&&window.location.assign(n),{data:{provider:e,url:n,flowId:r},error:null}}async _recoverAndRefresh(){let e=`#_recoverAndRefresh()`;this._debug(e,`begin`);try{let t=await W(this.storage,this.storageKey);if(t&&this.userStorage){let e=await W(this.userStorage,this.storageKey+`-user`);!this.storage.isServer&&Object.is(this.storage,this.userStorage)&&!e&&(e={user:t.user},await U(this.userStorage,this.storageKey+`-user`,e)),t.user=e?.user??ii()}else if(t&&!t.user&&!t.user){let e=await W(this.storage,this.storageKey+`-user`);e&&e?.user?(t.user=e.user,await G(this.storage,this.storageKey+`-user`),await U(this.storage,this.storageKey,t)):t.user=ii()}if(this._debug(e,`session from storage`,t),!this._isValidSession(t)){this._debug(e,`session is not valid`),t!==null&&await this._removeSession();return}let n=(t.expires_at??1/0)*1e3-Date.now()<Yn;if(this._debug(e,`session has${n?``:` not`} expired with margin of ${Yn}s`),n){if(this.autoRefreshToken&&t.refresh_token){let{error:n}=await this._callRefreshToken(t.refresh_token);n&&(fr(n)?this._debug(e,`refresh discarded by commit guard`,n):this._debug(e,`refresh failed`,n))}}else if(t.user&&t.user.__isUserNotAvailableProxy===!0)try{let{data:n,error:r}=await this._getUser(t.access_token);!r&&n?.user?(t.user=n.user,await this._saveSession(t),await this._notifyAllSubscribers(`SIGNED_IN`,t)):this._debug(e,`could not get user data, skipping SIGNED_IN notification`)}catch(t){console.error(`Error getting user data:`,t),this._debug(e,`error getting user data, skipping SIGNED_IN notification`,t)}else await this._notifyAllSubscribers(`SIGNED_IN`,t)}catch(t){this._debug(e,`error`,t),ur(t)?console.warn(t):console.error(t);return}finally{this._debug(e,`end`)}}async _callRefreshToken(e){var t,n;if(!e)throw new R;if(this.refreshingDeferred)return this.refreshingDeferred.promise;if(this.lastRefreshFailure&&this.lastRefreshFailure.refreshToken===e&&Date.now()<this.lastRefreshFailure.expiresAt)return this._debug(`#_callRefreshToken()`,`returning cached failure (cooldown active)`),this.lastRefreshFailure.result;let r=`#_callRefreshToken()`;this._debug(r,`begin`);try{this.refreshingDeferred=new Nr,this.refreshingDeferred.promise.then(void 0,()=>{});let t=await W(this.storage,this.storageKey),{data:n,error:i}=await this._refreshAccessToken(e);if(i)throw i;if(!n.session)throw new R;let a=await W(this.storage,this.storageKey);if(t!==null&&(a===null||a.refresh_token!==t.refresh_token)){this._debug(r,`commit guard: storage changed since refresh started, discarding rotated tokens`,{startedWith:`present`,nowHolds:a?`replaced`:`cleared`});let e={data:null,error:new dr};return this.refreshingDeferred.resolve(e),e}let o=this._sessionRemovalEpoch;if(await this._saveSession(n.session),this._sessionRemovalEpoch!==o){this._debug(r,`commit guard (post-save): _removeSession ran during _saveSession, undoing write`),await G(this.storage,this.storageKey),this.userStorage&&await G(this.userStorage,this.storageKey+`-user`);let e={data:null,error:new dr};return this.refreshingDeferred.resolve(e),e}await this._notifyAllSubscribers(`TOKEN_REFRESHED`,n.session);let s={data:n.session,error:null};return this.lastRefreshFailure=null,this.refreshingDeferred.resolve(s),s}catch(i){if(this._debug(r,`error`,i),F(i)){let n={data:null,error:i};if(!ur(i)){let e=await W(this.storage,this.storageKey);e?.expires_at&&e.expires_at*1e3>Date.now()?this._debug(r,`proactive refresh failed, access token still valid — preserving session`):await this._removeSession()}return this.lastRefreshFailure={refreshToken:e,result:n,expiresAt:Date.now()+6e4},(t=this.refreshingDeferred)==null||t.resolve(n),n}throw(n=this.refreshingDeferred)==null||n.reject(i),i}finally{this.refreshingDeferred=null,this._debug(r,`end`)}}async _notifyAllSubscribers(e,t,n=!0){if(this._pendingInitNotifications!==null&&n){this._pendingInitNotifications.push({event:e,session:t,broadcast:n});return}let r=`#_notifyAllSubscribers(${e})`;this._debug(r,`begin`,t,`broadcast = ${n}`);try{this.broadcastChannel&&n&&this.broadcastChannel.postMessage({event:e,session:t});let r=[],i=Array.from(this.stateChangeEmitters.values()).map(async n=>{try{await n.callback(e,t)}catch(e){r.push(e)}});if(await Promise.all(i),r.length>0){for(let e=0;e<r.length;e+=1)console.error(r[e]);throw r[0]}}finally{this._debug(r,`end`)}}async _saveSession(e){this._debug(`#_saveSession()`,e),this.suppressGetSessionWarning=!0;let t=Object.assign({},e),n=t.user&&t.user.__isUserNotAvailableProxy===!0;if(this.userStorage){!n&&t.user&&await U(this.userStorage,this.storageKey+`-user`,{user:t.user});let e=Object.assign({},t);delete e.user;let r=oi(e);await U(this.storage,this.storageKey,r)}else{let e=oi(t);await U(this.storage,this.storageKey,e)}}async _removeSession(){this._sessionRemovalEpoch+=1,this._debug(`#_removeSession()`),this.lastRefreshFailure=null,this.suppressGetSessionWarning=!1,await G(this.storage,this.storageKey),await Yr(this.storage,this.storageKey),await G(this.storage,this.storageKey+`-user`),this.userStorage&&await G(this.userStorage,this.storageKey+`-user`),await this._notifyAllSubscribers(`SIGNED_OUT`,null)}_removeVisibilityChangedCallback(){this._debug(`#_removeVisibilityChangedCallback()`);let e=this.visibilityChangedCallback;this.visibilityChangedCallback=null;try{e&&V()&&window!=null&&window.removeEventListener&&window.removeEventListener(`visibilitychange`,e)}catch(e){console.error(`removing visibilitychange callback failed`,e)}}async _startAutoRefresh(){await this._stopAutoRefresh(),this._debug(`#_startAutoRefresh()`);let e=setInterval(()=>this._autoRefreshTokenTick(),M);this.autoRefreshTicker=e,e&&typeof e==`object`&&typeof e.unref==`function`?e.unref():typeof Deno<`u`&&typeof Deno.unrefTimer==`function`&&Deno.unrefTimer(e);let t=setTimeout(async()=>{await this.initializePromise,await this._autoRefreshTokenTick()},0);this.autoRefreshTickTimeout=t,t&&typeof t==`object`&&typeof t.unref==`function`?t.unref():typeof Deno<`u`&&typeof Deno.unrefTimer==`function`&&Deno.unrefTimer(t)}async _stopAutoRefresh(){this._debug(`#_stopAutoRefresh()`);let e=this.autoRefreshTicker;this.autoRefreshTicker=null,e&&clearInterval(e);let t=this.autoRefreshTickTimeout;this.autoRefreshTickTimeout=null,t&&clearTimeout(t)}async startAutoRefresh(){this._removeVisibilityChangedCallback(),await this._startAutoRefresh()}async stopAutoRefresh(){this._removeVisibilityChangedCallback(),await this._stopAutoRefresh()}async dispose(){var e;this._removeVisibilityChangedCallback(),await this._stopAutoRefresh(),(e=this.broadcastChannel)==null||e.close(),this.broadcastChannel=null,this.stateChangeEmitters.clear()}async _autoRefreshTokenTick(){if(this._debug(`#_autoRefreshTokenTick()`,`begin`),this.lock!=null){try{await this._acquireLock(0,async()=>{try{let e=Date.now();try{return await this._useSession(async t=>{let{data:{session:n}}=t;if(!n||!n.refresh_token||!n.expires_at){this._debug(`#_autoRefreshTokenTick()`,`no session`);return}let r=Math.floor((n.expires_at*1e3-e)/M);this._debug(`#_autoRefreshTokenTick()`,`access token expires in ${r} ticks, a tick lasts ${M}ms, refresh threshold is 3 ticks`),r<=3&&await this._callRefreshToken(n.refresh_token)})}catch(e){console.error(`Auto refresh tick failed with error. This is likely a transient error.`,e)}}finally{this._debug(`#_autoRefreshTokenTick()`,`end`)}})}catch(e){if(e instanceof yi)this._debug(`auto refresh token tick lock not available`);else throw e}return}if(this.refreshingDeferred!==null){this._debug(`#_autoRefreshTokenTick()`,`refresh already in flight, skipping`);return}try{let e=Date.now();try{await this._useSession(async t=>{let{data:{session:n}}=t;if(!n||!n.refresh_token||!n.expires_at){this._debug(`#_autoRefreshTokenTick()`,`no session`);return}let r=Math.floor((n.expires_at*1e3-e)/M);this._debug(`#_autoRefreshTokenTick()`,`access token expires in ${r} ticks, a tick lasts ${M}ms, refresh threshold is 3 ticks`),r<=3&&await this._callRefreshToken(n.refresh_token)})}catch(e){console.error(`Auto refresh tick failed with error. This is likely a transient error.`,e)}}finally{this._debug(`#_autoRefreshTokenTick()`,`end`)}}async _handleVisibilityChange(){if(this._debug(`#_handleVisibilityChange()`),!V()||!(window!=null&&window.addEventListener))return this.autoRefreshToken&&this.startAutoRefresh(),!1;try{this.visibilityChangedCallback=async()=>{try{await this._onVisibilityChanged(!1)}catch(e){this._debug(`#visibilityChangedCallback`,`error`,e)}},window==null||window.addEventListener(`visibilitychange`,this.visibilityChangedCallback),await this._onVisibilityChanged(!0)}catch(e){console.error(`_handleVisibilityChange`,e)}}async _onVisibilityChanged(e){let t=`#_onVisibilityChanged(${e})`;if(this._debug(t,`visibilityState`,document.visibilityState),document.visibilityState===`visible`){if(this.autoRefreshToken&&this._startAutoRefresh(),!e)if(await this.initializePromise,this.lock!=null)await this._acquireLock(this.lockAcquireTimeout,async()=>{if(document.visibilityState!==`visible`){this._debug(t,`acquired the lock to recover the session, but the browser visibilityState is no longer visible, aborting`);return}await this._recoverAndRefresh()});else{if(document.visibilityState!==`visible`){this._debug(t,`visibilityState is no longer visible, skipping recovery`);return}await this._recoverAndRefresh()}}else document.visibilityState===`hidden`&&this.autoRefreshToken&&this._stopAutoRefresh()}async _getUrlForProvider(e,t,n){let r=n?.redirectTo,i=null,a=null,o=null;this.flowType===`pkce`&&([i,a,o]=await this._getCodeChallengeAndMethod(),r=this._maybeAppendFlowIdToRedirect(r,o));let s=[`provider=${encodeURIComponent(t)}`];if(r&&s.push(`redirect_to=${encodeURIComponent(r)}`),n?.scopes&&s.push(`scopes=${encodeURIComponent(n.scopes)}`),i!=null&&a!=null){let e=new URLSearchParams({code_challenge:`${encodeURIComponent(i)}`,code_challenge_method:`${encodeURIComponent(a)}`});s.push(e.toString())}if(n?.queryParams){let e=new URLSearchParams(n.queryParams);s.push(e.toString())}return n?.skipBrowserRedirect&&s.push(`skip_http_redirect=${n.skipBrowserRedirect}`),{url:`${e}?${s.join(`&`)}`,flowId:o}}_maybeAppendFlowIdToRedirect(e,t){return!e||!t||!this.experimental.appendPkceFlowIdToRedirects?e??void 0:Xr(e,t)}async _getCodeChallengeAndMethod(e=!1){return Zr(this.storage,this.storageKey,e,e=>this._debug(`#_getCodeChallengeAndMethod()`,`evicted oldest pending PKCE verifier slot`,e))}async _unenroll(e){try{return await this._useSession(async t=>{let{data:n,error:r}=t;return r?this._returnResult({data:null,error:r}):await Y(this.fetch,`DELETE`,`${this.url}/factors/${e.factorId}`,{headers:this.headers,jwt:n?.session?.access_token})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _enroll(e){try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)return this._returnResult({data:null,error:r});let i=Object.assign({friendly_name:e.friendlyName,factor_type:e.factorType},e.factorType===`phone`?{phone:e.phone}:e.factorType===`totp`?{issuer:e.issuer}:{}),{data:a,error:o}=await Y(this.fetch,`POST`,`${this.url}/factors`,{body:i,headers:this.headers,jwt:n?.session?.access_token});return o?this._returnResult({data:null,error:o}):(e.factorType===`totp`&&a.type===`totp`&&a?.totp?.qr_code&&(a.totp.qr_code=`data:image/svg+xml;utf-8,${a.totp.qr_code}`),this._returnResult({data:a,error:null}))})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _verify(e){let t=async()=>{try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)return this._returnResult({data:null,error:r});let i=Object.assign({challenge_id:e.challengeId},`webauthn`in e?{webauthn:Object.assign(Object.assign({},e.webauthn),{credential_response:e.webauthn.type===`create`?Ii(e.webauthn.credential_response):Li(e.webauthn.credential_response)})}:{code:e.code}),{data:a,error:o}=await Y(this.fetch,`POST`,`${this.url}/factors/${e.factorId}/verify`,{body:i,headers:this.headers,jwt:n?.session?.access_token});return o?this._returnResult({data:null,error:o}):(await this._saveSession(Object.assign({expires_at:Math.round(Date.now()/1e3)+a.expires_in},a)),await this._notifyAllSubscribers(`MFA_CHALLENGE_VERIFIED`,a),this._returnResult({data:a,error:o}))})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}};return this.lock==null?t():this._acquireLock(this.lockAcquireTimeout,t)}async _challenge(e){let t=async()=>{try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)return this._returnResult({data:null,error:r});let i=await Y(this.fetch,`POST`,`${this.url}/factors/${e.factorId}/challenge`,{body:e,headers:this.headers,jwt:n?.session?.access_token});if(i.error)return i;let{data:a}=i;if(a.type!==`webauthn`)return{data:a,error:null};switch(a.webauthn.type){case`create`:return{data:Object.assign(Object.assign({},a),{webauthn:Object.assign(Object.assign({},a.webauthn),{credential_options:Object.assign(Object.assign({},a.webauthn.credential_options),{publicKey:Pi(a.webauthn.credential_options.publicKey)})})}),error:null};case`request`:return{data:Object.assign(Object.assign({},a),{webauthn:Object.assign(Object.assign({},a.webauthn),{credential_options:Object.assign(Object.assign({},a.webauthn.credential_options),{publicKey:Fi(a.webauthn.credential_options.publicKey)})})}),error:null}}})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}};return this.lock==null?t():this._acquireLock(this.lockAcquireTimeout,t)}async _challengeAndVerify(e){let{data:t,error:n}=await this._challenge({factorId:e.factorId});return n?this._returnResult({data:null,error:n}):await this._verify({factorId:e.factorId,challengeId:t.id,code:e.code})}async _listFactors(){let{data:{user:e},error:t}=await this.getUser();if(t)return{data:null,error:t};let n={all:[],phone:[],totp:[],webauthn:[],recovery_code:[]};for(let t of e?.factors??[])n.all.push(t),t.status===`verified`&&t.factor_type in n&&Array.isArray(n[t.factor_type])&&n[t.factor_type].push(t);return{data:n,error:null}}async _getAuthenticatorAssuranceLevel(e){if(e)try{let{payload:t}=Pr(e),n=null;t.aal&&(n=t.aal);let r=n,{data:{user:i},error:a}=await this.getUser(e);if(a)return this._returnResult({data:null,error:a});((i?.factors)?.filter(e=>e.status===`verified`)??[]).length>0&&(r=`aal2`);let o=t.amr||[];return{data:{currentLevel:n,nextLevel:r,currentAuthenticationMethods:o},error:null}}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}let{data:{session:t},error:n}=await this.getSession();if(n)return this._returnResult({data:null,error:n});if(!t)return{data:{currentLevel:null,nextLevel:null,currentAuthenticationMethods:[]},error:null};let{payload:r}=Pr(t.access_token),i=null;r.aal&&(i=r.aal);let a=i;(t.user.factors?.filter(e=>e.status===`verified`)??[]).length>0&&(a=`aal2`);let o=r.amr||[];return{data:{currentLevel:i,nextLevel:a,currentAuthenticationMethods:o},error:null}}async _getRecoveryCodesStatus(){ri(this.experimental);try{return await this._useSession(async e=>{let{data:t,error:n}=e;if(n)return this._returnResult({data:null,error:n});let{data:r,error:i}=await Y(this.fetch,`GET`,`${this.url}/factors/recovery-codes`,{headers:this.headers,jwt:t?.session?.access_token});return i?this._returnResult({data:null,error:i}):this._returnResult({data:r,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _generateRecoveryCodes(e){ri(this.experimental);try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)return this._returnResult({data:null,error:r});let{data:i,error:a}=await Y(this.fetch,`POST`,`${this.url}/factors/recovery-codes`,{body:e?.friendlyName?{friendly_name:e.friendlyName}:void 0,headers:this.headers,jwt:n?.session?.access_token});return a?this._returnResult({data:null,error:a}):this._returnResult({data:i,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _verifyRecoveryCode(e){ri(this.experimental);let t=async()=>{try{return await this._useSession(async t=>{let{data:n,error:r}=t;if(r)return this._returnResult({data:null,error:r});let{data:i,error:a}=await Y(this.fetch,`POST`,`${this.url}/factors/recovery-codes/verify`,{body:{code:e.code},headers:this.headers,jwt:n?.session?.access_token});if(a)return this._returnResult({data:null,error:a});let o=Object.assign({expires_at:Dr(i.expires_in)},i);return await this._saveSession(o),await this._notifyAllSubscribers(`MFA_CHALLENGE_VERIFIED`,o),this._returnResult({data:i,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}};return this.lock==null?t():this._acquireLock(this.lockAcquireTimeout,t)}async _regenerateRecoveryCodes(){ri(this.experimental);try{return await this._useSession(async e=>{let{data:t,error:n}=e;if(n)return this._returnResult({data:null,error:n});let{data:r,error:i}=await Y(this.fetch,`POST`,`${this.url}/factors/recovery-codes/regenerate`,{headers:this.headers,jwt:t?.session?.access_token});return i?this._returnResult({data:null,error:i}):this._returnResult({data:r,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _unenrollRecoveryCodes(){ri(this.experimental);try{return await this._useSession(async e=>{let{data:t,error:n}=e;if(n)return this._returnResult({data:null,error:n});let{data:r,error:i}=await Y(this.fetch,`DELETE`,`${this.url}/factors/recovery-codes`,{headers:this.headers,jwt:t?.session?.access_token});return i?this._returnResult({data:null,error:i}):this._returnResult({data:r,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _getAuthorizationDetails(e){try{return await this._useSession(async t=>{let{data:{session:n},error:r}=t;return r?this._returnResult({data:null,error:r}):n?await Y(this.fetch,`GET`,`${this.url}/oauth/authorizations/${e}`,{headers:this.headers,jwt:n.access_token,xform:e=>({data:e,error:null})}):this._returnResult({data:null,error:new R})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _approveAuthorization(e,t){try{return await this._useSession(async n=>{let{data:{session:r},error:i}=n;if(i)return this._returnResult({data:null,error:i});if(!r)return this._returnResult({data:null,error:new R});let a=await Y(this.fetch,`POST`,`${this.url}/oauth/authorizations/${e}/consent`,{headers:this.headers,jwt:r.access_token,body:{action:`approve`},xform:e=>({data:e,error:null})});return a.data&&a.data.redirect_url&&V()&&!t?.skipBrowserRedirect&&window.location.assign(a.data.redirect_url),a})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _denyAuthorization(e,t){try{return await this._useSession(async n=>{let{data:{session:r},error:i}=n;if(i)return this._returnResult({data:null,error:i});if(!r)return this._returnResult({data:null,error:new R});let a=await Y(this.fetch,`POST`,`${this.url}/oauth/authorizations/${e}/consent`,{headers:this.headers,jwt:r.access_token,body:{action:`deny`},xform:e=>({data:e,error:null})});return a.data&&a.data.redirect_url&&V()&&!t?.skipBrowserRedirect&&window.location.assign(a.data.redirect_url),a})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _listOAuthGrants(){try{return await this._useSession(async e=>{let{data:{session:t},error:n}=e;return n?this._returnResult({data:null,error:n}):t?await Y(this.fetch,`GET`,`${this.url}/user/oauth/grants`,{headers:this.headers,jwt:t.access_token,xform:e=>({data:e,error:null})}):this._returnResult({data:null,error:new R})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _revokeOAuthGrant(e){try{return await this._useSession(async t=>{let{data:{session:n},error:r}=t;return r?this._returnResult({data:null,error:r}):n?(await Y(this.fetch,`DELETE`,`${this.url}/user/oauth/grants`,{headers:this.headers,jwt:n.access_token,query:{client_id:e.clientId},noResolveJson:!0}),{data:{},error:null}):this._returnResult({data:null,error:new R})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async fetchJwk(e,t={keys:[]}){let n=t.keys.find(t=>t.kid===e);if(n)return n;let r=Date.now();if(n=this.jwks.keys.find(t=>t.kid===e),n&&this.jwks_cached_at+6e5>r)return n;let{data:i,error:a}=await Y(this.fetch,`GET`,`${this.url}/.well-known/jwks.json`,{headers:this.headers});if(a)throw a;return!i.keys||i.keys.length===0||(this.jwks=i,this.jwks_cached_at=r,n=i.keys.find(t=>t.kid===e),!n)?null:n}async getClaims(e,t={}){try{let n=e;if(!n){let{data:e,error:t}=await this.getSession();if(t||!e.session)return this._returnResult({data:null,error:t});n=e.session.access_token}let{header:r,payload:i,signature:a,raw:{header:o,payload:s}}=Pr(n);if(!t?.allowExpired)try{ei(i.exp)}catch(e){throw new hr(e instanceof Error?e.message:`JWT validation failed`)}let c=!r.alg||r.alg.startsWith(`HS`)||!r.kid||!(`crypto`in globalThis&&`subtle`in globalThis.crypto)?null:await this.fetchJwk(r.kid,t?.keys?{keys:t.keys}:t?.jwks);if(!c){let{error:e}=await this.getUser(n);if(e)throw e;return{data:{claims:i,header:r,signature:a},error:null}}let l=ti(r.alg),u=await crypto.subtle.importKey(`jwk`,c,l,!0,[`verify`]);if(!await crypto.subtle.verify(l,u,a,Er(`${o}.${s}`)))throw new hr(`Invalid JWT signature`);return{data:{claims:i,header:r,signature:a},error:null}}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async signInWithPasskey(e){try{if(!zi())return this._returnResult({data:null,error:new I(`Browser does not support WebAuthn`,null)});let{data:t,error:n}=await this._startPasskeyAuthentication({options:{captchaToken:e?.options?.captchaToken}});if(n||!t)return this._returnResult({data:null,error:n});let{data:r,error:i}=await Vi({publicKey:Fi(t.options),signal:e?.options?.signal??Ni.createNewAbortSignal(),mediation:e?.options?.mediation});if(i||!r)return this._returnResult({data:null,error:i??new I(`WebAuthn ceremony failed`,null)});let a=Li(r);return this._verifyPasskeyAuthentication({challengeId:t.challenge_id,credential:a})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async registerPasskey(e){try{if(!zi())return this._returnResult({data:null,error:new I(`Browser does not support WebAuthn`,null)});let{data:t,error:n}=await this._startPasskeyRegistration();if(n||!t)return this._returnResult({data:null,error:n});let{data:r,error:i}=await Bi({publicKey:Pi(t.options),signal:e?.options?.signal??Ni.createNewAbortSignal()});if(i||!r)return this._returnResult({data:null,error:i??new I(`WebAuthn ceremony failed`,null)});let a=Ii(r);return this._verifyPasskeyRegistration({challengeId:t.challenge_id,credential:a})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _startPasskeyRegistration(){try{return await this._useSession(async e=>{let{data:{session:t},error:n}=e;if(n)return this._returnResult({data:null,error:n});if(!t)return this._returnResult({data:null,error:new R});let{data:r,error:i}=await Y(this.fetch,`POST`,`${this.url}/passkeys/registration/options`,{headers:this.headers,jwt:t.access_token,body:{}});return i?this._returnResult({data:null,error:i}):this._returnResult({data:r,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _verifyPasskeyRegistration(e){try{return await this._useSession(async t=>{let{data:{session:n},error:r}=t;if(r)return this._returnResult({data:null,error:r});if(!n)return this._returnResult({data:null,error:new R});let{data:i,error:a}=await Y(this.fetch,`POST`,`${this.url}/passkeys/registration/verify`,{headers:this.headers,jwt:n.access_token,body:{challenge_id:e.challengeId,credential:e.credential}});return a?this._returnResult({data:null,error:a}):this._returnResult({data:i,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _startPasskeyAuthentication(e){try{let{data:t,error:n}=await Y(this.fetch,`POST`,`${this.url}/passkeys/authentication/options`,{headers:this.headers,body:{gotrue_meta_security:{captcha_token:e?.options?.captchaToken}}});return n?this._returnResult({data:null,error:n}):this._returnResult({data:t,error:null})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _verifyPasskeyAuthentication(e){try{let{data:t,error:n}=await Y(this.fetch,`POST`,`${this.url}/passkeys/authentication/verify`,{headers:this.headers,body:{challenge_id:e.challengeId,credential:e.credential},xform:X});return n?this._returnResult({data:null,error:n}):(t.session&&(await this._saveSession(t.session),await this._notifyAllSubscribers(`SIGNED_IN`,t.session)),this._returnResult({data:t,error:null}))}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _listPasskeys(){try{return await this._useSession(async e=>{let{data:{session:t},error:n}=e;if(n)return this._returnResult({data:null,error:n});if(!t)return this._returnResult({data:null,error:new R});let{data:r,error:i}=await Y(this.fetch,`GET`,`${this.url}/passkeys`,{headers:this.headers,jwt:t.access_token,xform:e=>({data:e,error:null})});return i?this._returnResult({data:null,error:i}):this._returnResult({data:r,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _updatePasskey(e){try{return await this._useSession(async t=>{let{data:{session:n},error:r}=t;if(r)return this._returnResult({data:null,error:r});if(!n)return this._returnResult({data:null,error:new R});let{data:i,error:a}=await Y(this.fetch,`PATCH`,`${this.url}/passkeys/${e.passkeyId}`,{headers:this.headers,jwt:n.access_token,body:{friendly_name:e.friendlyName}});return a?this._returnResult({data:null,error:a}):this._returnResult({data:i,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}async _deletePasskey(e){try{return await this._useSession(async t=>{let{data:{session:n},error:r}=t;if(r)return this._returnResult({data:null,error:r});if(!n)return this._returnResult({data:null,error:new R});let{error:i}=await Y(this.fetch,`DELETE`,`${this.url}/passkeys/${e.passkeyId}`,{headers:this.headers,jwt:n.access_token,noResolveJson:!0});return i?this._returnResult({data:null,error:i}):this._returnResult({data:null,error:null})})}catch(e){if(F(e))return this._returnResult({data:null,error:e});throw e}}};Zi.nextInstanceID={};var Qi=Zi,$i=_i,ea=Qi,ta=class extends ea{constructor(e){super(e)}},na=class{constructor(e,t,n){this.supabaseUrl=e,this.supabaseKey=t;let r=qn(e);if(!t)throw Error(`supabaseKey is required.`);Ln(t),Gn(n),this.realtimeUrl=new URL(`realtime/v1`,r),this.realtimeUrl.protocol=this.realtimeUrl.protocol.replace(`http`,`ws`),this.authUrl=new URL(`auth/v1`,r),this.storageUrl=new URL(`storage/v1`,r),this.functionsUrl=new URL(`functions/v1`,r);let i=`sb-${r.hostname.split(`.`)[0]}-auth-token`,a={db:Cn,realtime:Tn,auth:{...wn,storageKey:i},global:Sn,tracePropagation:En},o=Kn(n??{},a);this.settings=o,this.storageKey=o.auth.storageKey??``,this.headers=o.global.headers??{},o.accessToken?(this.accessToken=o.accessToken,this.auth=new Proxy({},{get:(e,t)=>{throw Error(`@supabase/supabase-js: Supabase Client is configured with the accessToken option, accessing supabase.auth.${String(t)} is not possible`)}})):this.auth=this._initSupabaseAuthClient(o.auth??{},this.headers,o.global.fetch),this.fetch=Rn(t,e,this._getSessionToken.bind(this),o.global.fetch,o.tracePropagation),this.functionsFetch=Rn(t,e,this._getSessionToken.bind(this),o.global.fetch,o.tracePropagation,{omitApiKeyAsBearer:!0}),this.realtime=this._initRealtimeClient({headers:this.headers,accessToken:this._getAccessToken.bind(this),fetch:this.fetch,...o.realtime}),this.accessToken&&Promise.resolve(this.accessToken()).then(e=>this.realtime.setAuth(e)).catch(e=>console.warn(`Failed to set initial Realtime auth token:`,e)),this.rest=new fe(new URL(`rest/v1`,r).href,{headers:this.headers,schema:o.db.schema,fetch:Nn(o.global.fetch),wrapFetch:n=>Rn(t,e,this._getSessionToken.bind(this),n,o.tracePropagation),timeout:o.db.timeout,urlLengthLimit:o.db.urlLengthLimit,retry:o.db.retry}),this.storage=new vn(this.storageUrl.href,this.headers,this.fetch,n?.storage),o.accessToken||this._listenForAuthEvents()}get functions(){return new l(this.functionsUrl.href,{headers:this.headers,customFetch:this.functionsFetch})}from(e,t){return this.rest.from(e,t)}schema(e){return this.rest.schema(e)}getOpenApiSpec(){return this.rest.getOpenApiSpec()}rpc(e,t={},n={head:!1,get:!1,count:void 0}){return this.rest.rpc(e,t,n)}channel(e,t={config:{}}){return this.realtime.channel(e,t)}getChannels(){return this.realtime.getChannels()}removeChannel(e){return this.realtime.removeChannel(e)}removeAllChannels(){return this.realtime.removeAllChannels()}async _getSessionToken(){if(this.accessToken)return await this.accessToken();let{data:e}=await this.auth.getSession();return e.session?.access_token??null}async _getAccessToken(){return await this._getSessionToken()??this.supabaseKey}_initSupabaseAuthClient({autoRefreshToken:e,persistSession:t,detectSessionInUrl:n,storage:r,userStorage:i,storageKey:a,flowType:o,lock:s,debug:c,throwOnError:l,experimental:u,lockAcquireTimeout:d,skipAutoInitialize:f},p,m){let h={Authorization:`Bearer ${this.supabaseKey}`,apikey:`${this.supabaseKey}`};return new ta({url:this.authUrl.href,headers:{...h,...p},storageKey:a,autoRefreshToken:e,persistSession:t,detectSessionInUrl:n,storage:r,userStorage:i,flowType:o,lock:s,debug:c,throwOnError:l,experimental:u,fetch:m,lockAcquireTimeout:d,skipAutoInitialize:f,hasCustomAuthorizationHeader:Object.keys(this.headers).some(e=>e.toLowerCase()===`authorization`)})}_initRealtimeClient(e){return new bt(this.realtimeUrl.href,{...e,params:{apikey:this.supabaseKey,...e?.params}})}_listenForAuthEvents(){return this.auth.onAuthStateChange((e,t)=>{this._handleTokenChanged(e,`CLIENT`,t?.access_token)})}_handleTokenChanged(e,t,n){(e===`TOKEN_REFRESHED`||e===`SIGNED_IN`||e===`INITIAL_SESSION`)&&this.changedAccessToken!==n?(this.changedAccessToken=n,this.realtime.setAuth(n)):e===`SIGNED_OUT`&&(this.realtime.setAuth(),t==`STORAGE`&&this.auth.signOut(),this.changedAccessToken=void 0)}};let ra=(e,t,n)=>new na(e,t,n);function ia(){if(typeof window<`u`||globalThis.Deno!==void 0)return!1;let e=globalThis.process;if(!e)return!1;let t=e.version;if(t==null)return!1;let n=t.match(/^v(\d+)\./);return n?parseInt(n[1],10)<=20:!1}return ia()&&console.warn(`⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715`),e.AuthAdminApi=$i,e.AuthApiError=er,e.AuthClient=ea,e.AuthError=P,e.AuthImplicitGrantRedirectError=ir,e.AuthInvalidCredentialsError=rr,e.AuthInvalidJwtError=hr,e.AuthInvalidTokenResponseError=z,e.AuthPKCECodeVerifierMissingError=sr,e.AuthPKCEGrantCodeExchangeError=or,e.AuthRefreshDiscardedError=dr,e.AuthRetryableFetchError=lr,e.AuthSessionMissingError=R,e.AuthUnknownError=I,e.AuthWeakPasswordError=pr,e.CustomAuthError=L,Object.defineProperty(e,`FunctionRegion`,{enumerable:!0,get:function(){return c}}),e.FunctionsError=i,e.FunctionsFetchError=a,e.FunctionsHttpError=s,e.FunctionsRelayError=o,e.GoTrueAdminApi=_i,e.GoTrueClient=Qi,e.NavigatorLockAcquireTimeoutError=bi,e.PostgrestError=u,e.REALTIME_CHANNEL_STATES=pt,Object.defineProperty(e,`REALTIME_LISTEN_TYPES`,{enumerable:!0,get:function(){return T}}),Object.defineProperty(e,`REALTIME_POSTGRES_CHANGES_LISTEN_EVENT`,{enumerable:!0,get:function(){return ft}}),Object.defineProperty(e,`REALTIME_PRESENCE_LISTEN_EVENTS`,{enumerable:!0,get:function(){return $e}}),Object.defineProperty(e,`REALTIME_SUBSCRIBE_STATES`,{enumerable:!0,get:function(){return E}}),e.RealtimeChannel=mt,e.RealtimeClient=bt,e.RealtimePostgresFilterBuilder=ut,e.RealtimePresence=et,e.SIGN_OUT_SCOPES=gi,e.StorageApiError=It,e.SupabaseClient=na,e.WebSocketFactory=pe,e.createClient=ra,e.isAuthApiError=tr,e.isAuthError=F,e.isAuthImplicitGrantRedirectError=ar,e.isAuthPKCECodeVerifierMissingError=cr,e.isAuthRefreshDiscardedError=fr,e.isAuthRetryableFetchError=ur,e.isAuthSessionMissingError=nr,e.isAuthWeakPasswordError=mr,e.lockInternals=Q,e.navigatorLock=Si,e.postgresChangesFilter=dt,e.processLock=wi,e})({});</script>
 <script>
 "use strict";
-const KOL={nr:"Numer rezerwacji",pacjent:"Osoba rezerwująca",data:"Data rezerwacji",godzina:"Godzina",terapeuta:"Pracownik",usluga:"Usługa",kategoria:"Kategoria usługi",platnosc:"Płatność"};
-function jestBezplatna(r){
-  const u=String(r[KOL.usluga]||"").toLowerCase();
-  const k=String(r[KOL.kategoria]||"").toLowerCase();
-  return u.indexOf("bezpłat")>=0||u.indexOf("bezplat")>=0||k.indexOf("bezpłat")>=0||k.indexOf("bezplat")>=0;
-}
-const MIES_PL=["sty","lut","mar","kwi","maj","cze","lip","sie","wrz","paź","lis","gru"];
-
-let wczytanePliki=[], ostatniWynik=null, sortKol="auto", sortDir=1;
+const KOL={nr:"Numer rezerwacji",pacjent:"Osoba rezerwująca",data:"Data rezerwacji",godzina:"Godzina",terapeuta:"Pracownik",usluga:"Usługa",kategoria:"Kategoria usługi"};
+function jestBezplatna(r){const u=String(r[KOL.usluga]||"").toLowerCase(),k=String(r[KOL.kategoria]||"").toLowerCase();
+  return u.indexOf("bezpłat")>=0||u.indexOf("bezplat")>=0||k.indexOf("bezpłat")>=0||k.indexOf("bezplat")>=0;}
 const $=(id)=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function normKey(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ł/g,"l").replace(/Ł/g,"l").toLowerCase().replace(/\s+/g," ").trim();}
+function parsujDate(v){if(v==null)return null;if(v instanceof Date)return isNaN(v)?null:v;
+  const m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);if(!m)return null;
+  return new Date(+m[1],+m[2]-1,+m[3],m[4]?+m[4]:0,m[5]?+m[5]:0,0,0);}
+function isoDnia(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function modaTekst(arr){const l={};let b=null,bn=0;arr.forEach(x=>{if(!x)return;l[x]=(l[x]||0)+1;if(l[x]>bn){bn=l[x];b=x;}});return b||"";}
+function nazwaUzyt(e){if(!e)return "";if(e==="(plik)")return "z pliku";return String(e).split("@")[0];}
+function fmtKiedy(iso){if(!iso)return "";const d=new Date(iso);if(isNaN(d))return "";
+  return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+const STATUS_ETYK={do:"Do zadzwonienia",zadzwoniono:"Zadzwoniono",mail:"Wysłano maila",oddzwonic:"Oddzwonić",umowiono:"Umówiony",zrezygnowal:"Zrezygnował"};
+const TERMINAL=new Set(["umowiono","zrezygnowal"]);
 
-// ---- wspólna lista robocza (Supabase, na żywo) ----
+// ---- stan (klucz = znormalizowane nazwisko) ----
 const SUPABASE_URL="https://udhhcyfywaisskkujzjk.supabase.co";
 const SUPABASE_KEY="sb_publishable_Db_JRjlVE9muBTRfrfrgyQ_vtro2LLm";
 let supa=null, uzytkownik="", kanal=null, syncTimer=null;
-let notatki={}, snapshots={}, metaChmura={};  // metaChmura[pac]={by,at} — kto i kiedy zmienił
-function zapiszNotatki(){}   // chmura jest źródłem prawdy — lokalny zapis zbędny
-function zapiszSnap(){}
-function noteFor(pac){return notatki[pac]||{status:"do",notatka:"",przypomnienie:""};}
-const STATUS_ETYK={do:"Do zadzwonienia",zadzwoniono:"Zadzwoniono",mail:"Wysłano maila",oddzwonic:"Oddzwonić",umowiono:"Umówiono",zrezygnowal:"Zrezygnował"};
-// statusy "zamykające" — pacjent schodzi z aktywnej listy dopiero po ich ustawieniu
-const TERMINAL=new Set(["umowiono","zrezygnowal"]);
+let notatki={}, dane={}, meta={};   // notatki[k]={status,notatka,przypomnienie}; dane[k]={pac,ostData,...}; meta[k]={by,at}
+let wczytanePliki=[], ostatniMeta=null;
 
-function nazwaUzyt(email){return email?String(email).split("@")[0]:"";}
-function fmtKiedy(iso){if(!iso)return "";const d=new Date(iso);if(isNaN(d))return "";
-  return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+(function(){const d=new Date();$("data").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");})();
 
-// uruchomienie połączenia z chmurą + sprawdzenie sesji
+// ---- Supabase: logowanie + synchronizacja ----
 async function initChmura(){
   try{ supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }
-  catch(e){ $("loginBlad").textContent="Błąd inicjalizacji połączenia: "+e.message; return; }
-  try{
-    const {data:{session}}=await supa.auth.getSession();
-    if(session&&session.user){ await poLogowaniu(session); }
-    else { pokazLogin(); }
+  catch(e){ $("loginBlad").textContent="Błąd połączenia: "+e.message; return; }
+  try{ const {data:{session}}=await supa.auth.getSession();
+    if(session&&session.user) await poLogowaniu(session); else pokazLogin();
   }catch(e){ pokazLogin(); }
 }
 function pokazLogin(){$("loginTlo").classList.remove("ukryty");$("hdrUzyt").style.display="none";}
 function ukryjLogin(){$("loginTlo").classList.add("ukryty");$("hdrUzyt").style.display="flex";}
 async function poLogowaniu(session){
   uzytkownik=(session.user&&session.user.email)||"";
-  $("ktoZalogowany").textContent=uzytkownik;
-  ukryjLogin();
-  await odczytajWorklist();
-  subskrybuj();
+  $("ktoZalogowany").textContent=uzytkownik; ukryjLogin();
+  await odczytajWorklist(); subskrybuj();
 }
-$("loginForm").addEventListener("submit",async(e)=>{
-  e.preventDefault();
-  if(!supa)return;
+$("loginForm").addEventListener("submit",async(e)=>{e.preventDefault();if(!supa)return;
   const email=$("loginEmail").value.trim(),haslo=$("loginHaslo").value;
-  $("loginBlad").textContent=""; $("loginBtn").disabled=true; $("loginBtn").textContent="Logowanie...";
-  try{
-    const {data,error}=await supa.auth.signInWithPassword({email,password:haslo});
-    if(error){ $("loginBlad").textContent="Nie udało się zalogować. Sprawdź e-mail i hasło."; }
-    else { $("loginHaslo").value=""; await poLogowaniu(data.session); }
-  }catch(err){ $("loginBlad").textContent="Błąd połączenia: "+err.message; }
-  $("loginBtn").disabled=false; $("loginBtn").textContent="Zaloguj się";
-});
+  $("loginBlad").textContent="";$("loginBtn").disabled=true;$("loginBtn").textContent="Logowanie...";
+  try{const {data,error}=await supa.auth.signInWithPassword({email,password:haslo});
+    if(error)$("loginBlad").textContent="Nie udało się zalogować. Sprawdź e-mail i hasło.";
+    else {$("loginHaslo").value="";await poLogowaniu(data.session);}
+  }catch(err){$("loginBlad").textContent="Błąd połączenia: "+err.message;}
+  $("loginBtn").disabled=false;$("loginBtn").textContent="Zaloguj się";});
 $("wylogujBtn").addEventListener("click",async()=>{
-  try{ if(kanal){await supa.removeChannel(kanal);kanal=null;} await supa.auth.signOut(); }catch(e){}
-  notatki={};snapshots={};metaChmura={};uzytkownik="";
-  if(ostatniWynik)render();
-  pokazLogin();
-});
+  try{if(kanal){await supa.removeChannel(kanal);kanal=null;}await supa.auth.signOut();}catch(e){}
+  notatki={};dane={};meta={};uzytkownik="";render();pokazLogin();});
 
-// pobranie całej wspólnej listy z chmury
 async function odczytajWorklist(){
   if(!supa)return;
-  try{
-    const {data,error}=await supa.from("worklist").select("*");
-    if(error){console.warn("odczyt worklist:",error.message);return;}
-    notatki={};metaChmura={};
-    (data||[]).forEach(r=>{
-      notatki[r.pac]={status:r.status||"do",notatka:r.notatka||"",przypomnienie:r.przypomnienie||""};
-      if(r.snap&&typeof r.snap==="object"&&Object.keys(r.snap).length)snapshots[r.pac]=r.snap;
-      metaChmura[r.pac]={by:r.updated_by||"",at:r.updated_at||""};
-    });
-    if(ostatniWynik)render();
-  }catch(e){console.warn("odczyt worklist wyjątek:",e);}
+  try{const {data:rows,error}=await supa.from("worklist").select("*");
+    if(error){console.warn("odczyt:",error.message);return;}
+    notatki={};dane={};meta={};
+    (rows||[]).forEach(r=>{const k=r.klucz;
+      notatki[k]={status:r.status||"do",notatka:r.notatka||"",przypomnienie:r.przypomnienie||""};
+      dane[k]=(r.snap&&typeof r.snap==="object"&&r.snap.pac)?r.snap:{pac:r.pac||k};
+      meta[k]={by:r.updated_by||"",at:r.updated_at||""};});
+    render();
+  }catch(e){console.warn("odczyt wyjątek:",e);}
 }
-// nasłuch zmian na żywo (druga osoba coś zmienia -> odświeżamy)
-function subskrybuj(){
-  if(!supa)return;
-  try{
-    kanal=supa.channel("worklist-rt")
-      .on("postgres_changes",{event:"*",schema:"public",table:"worklist"},()=>{
-        clearTimeout(syncTimer);syncTimer=setTimeout(odczytajWorklist,250);
-      }).subscribe();
-  }catch(e){console.warn("realtime:",e);}
-}
-// zapis jednego pacjenta do chmury (albo usunięcie, gdy wpis pusty)
-async function syncPacjent(pac){
-  if(!supa||!uzytkownik||!pac)return;
-  const klucz=normKey(pac);const n=notatki[pac];
-  const dot=n&&(n.notatka||n.przypomnienie||(n.status&&n.status!=="do"));
-  if(!dot){
-    delete metaChmura[pac];
-    try{ await supa.from("worklist").delete().eq("klucz",klucz); }catch(e){console.warn("usuń worklist:",e);}
-    return;
-  }
-  const snap=snapshots[pac]||{};const teraz=new Date().toISOString();
-  metaChmura[pac]={by:uzytkownik,at:teraz};
-  try{
-    await supa.from("worklist").upsert({klucz,pac,status:n.status,notatka:n.notatka||"",przypomnienie:n.przypomnienie||"",snap,updated_by:uzytkownik,updated_at:teraz},{onConflict:"klucz"});
-  }catch(e){console.warn("zapis worklist:",e);}
-}
-// aktywna lista robocza = policzeni z pliku + utrzymani z historii (z notatką/statusem), bez zamkniętych
-function listaRobocza(){
-  if(!ostatniWynik)return [];
-  const comp=ostatniWynik.lista;const seen=new Set();const wynik=[];
-  comp.forEach(x=>{snapshots[x.pac]=x;});zapiszSnap();
-  const pokazZ=$("pokazZamkniete")&&$("pokazZamkniete").checked;
-  comp.forEach(x=>{const st=noteFor(x.pac).status;
-    if(TERMINAL.has(st)&&!pokazZ)return;
-    wynik.push(Object.assign({},x,{zrodlo:TERMINAL.has(st)?"zamkniete":"auto"}));seen.add(x.pac);});
-  Object.keys(notatki).forEach(pac=>{
-    if(seen.has(pac))return;const n=notatki[pac];if(!n)return;
-    const ma=n.notatka||n.przypomnienie||(n.status&&n.status!=="do");if(!ma)return;
-    const term=TERMINAL.has(n.status);if(term&&!pokazZ)return;
-    const snap=snapshots[pac];if(!snap)return;
-    wynik.push(Object.assign({},snap,{zrodlo:term?"zamkniete":"historia"}));seen.add(pac);});
-  return wynik;
-}
+function subskrybuj(){if(!supa)return;
+  try{kanal=supa.channel("worklist-rt").on("postgres_changes",{event:"*",schema:"public",table:"worklist"},()=>{
+    clearTimeout(syncTimer);syncTimer=setTimeout(odczytajWorklist,250);}).subscribe();
+  }catch(e){console.warn("realtime:",e);}}
+function wierszDoChmury(k){return {klucz:k,pac:(dane[k]&&dane[k].pac)||k,status:notatki[k].status,
+  notatka:notatki[k].notatka||"",przypomnienie:notatki[k].przypomnienie||"",snap:dane[k]||{pac:k},
+  updated_by:(meta[k]&&meta[k].by)||uzytkownik,updated_at:(meta[k]&&meta[k].at)||new Date().toISOString()};}
+async function syncPacjent(k){if(!supa||!uzytkownik)return;
+  if(!notatki[k]){try{await supa.from("worklist").delete().eq("klucz",k);}catch(e){console.warn(e);}return;}
+  try{await supa.from("worklist").upsert(wierszDoChmury(k),{onConflict:"klucz"});}catch(e){console.warn("zapis:",e);}}
+async function syncWiele(klucze){if(!supa||!uzytkownik||!klucze.length)return;
+  const rows=klucze.map(wierszDoChmury);
+  try{await supa.from("worklist").upsert(rows,{onConflict:"klucz"});}catch(e){console.warn("zapis wielu:",e);}}
 
-const KOLUMNY=[{k:"pac",t:"Pacjent"},
-  {k:"notatki",t:"📝 Notatka / ⏰ przypomnienie",nieSort:true},
-  {k:"ostData",t:"Ostatnia wizyta"},
-  {k:"liczba",t:"Wizyt"},
-  {k:"maPrzyszla",t:"Przyszła wizyta"}];
-
-(function(){["thead-moja","thead-nowi"].forEach(id=>{const tr=$(id);KOLUMNY.forEach(c=>{const th=document.createElement("th");th.dataset.k=c.k;
-  th.innerHTML=c.t+(c.nieSort?'':' <span class="strz"></span>');
-  if(!c.nieSort)th.addEventListener("click",()=>{if(sortKol===c.k)sortDir*=-1;else{sortKol=c.k;sortDir=1;}render();});
-  else th.style.cursor="default";
-  tr.appendChild(th);});});})();
-
-(function(){const d=new Date();$("data").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");})();
-
-// zakładki
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("akt"));
-  t.classList.add("akt");
-  const cel=t.dataset.tab;
-  $("sek-lista").classList.toggle("ukryty",cel!=="lista");
-  $("sek-trendy").classList.toggle("ukryty",cel!=="trendy");
-  $("sek-duplikaty").classList.toggle("ukryty",cel!=="duplikaty");
-  if(cel==="trendy") renderTrendy();
-  if(cel==="duplikaty") renderDuplikaty();
-}));
-
-// wczytywanie
+// ---- wczytywanie plików ----
 const drop=$("drop"),plik=$("plik");
 ["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("drag");}));
 ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("drag");}));
 drop.addEventListener("drop",ev=>{ev.preventDefault();if(ev.dataTransfer.files.length)wczytajWiele(ev.dataTransfer.files);});
 plik.addEventListener("change",()=>{if(plik.files.length)wczytajWiele(plik.files);plik.value="";});
-function pokazBlad(m){const b=$("blad");b.textContent=m;b.classList.remove("ukryty");}
+function pokazBlad(m){$("blad").textContent=m;$("blad").classList.remove("ukryty");}
 function schowajBlad(){$("blad").classList.add("ukryty");}
 function wczytajWiele(fl){schowajBlad();const pliki=[...fl];let done=0;
   pliki.forEach(f=>{const rd=new FileReader();rd.onload=(e)=>{
@@ -582,463 +342,171 @@ function wczytajWiele(fl){schowajBlad();const pliki=[...fl];let done=0;
       const wiersze=XLSX.utils.sheet_to_json(ws,{defval:null});
       if(wiersze.length&&(KOL.pacjent in wiersze[0])&&(KOL.data in wiersze[0])){
         if(!wczytanePliki.some(p=>p.nazwa===f.name))wczytanePliki.push({nazwa:f.name,wiersze});
-      }else pokazBlad("Plik "+f.name+" nie wygląda na eksport rezerwacji (brak wymaganych kolumn: Osoba rezerwująca / Data rezerwacji).");
+      }else pokazBlad("Plik "+f.name+" nie wygląda na eksport z Bookero (brak kolumn Osoba rezerwująca / Data rezerwacji).");
     }catch(err){pokazBlad("Nie udało się odczytać pliku "+f.name+": "+err.message);}
     done++;if(done===pliki.length){odswiezListePlikow();analizuj();}
-  };rd.readAsArrayBuffer(f);});
-}
+  };rd.readAsArrayBuffer(f);});}
 function odswiezListePlikow(){const box=$("listaPlikow");box.innerHTML="";
-  if(!wczytanePliki.length){box.classList.add("ukryty");$("statusPlikow").textContent="";return;}
+  if(!wczytanePliki.length){box.classList.add("ukryty");return;}
   box.classList.remove("ukryty");
   wczytanePliki.forEach((p,i)=>{const el=document.createElement("div");el.className="plikTag";
-    el.innerHTML="<span>📎 <b>"+esc(p.nazwa)+"</b> ("+p.wiersze.length+")</span><span class='x' title='usuń'>✕</span>";
-    el.querySelector(".x").addEventListener("click",()=>{wczytanePliki.splice(i,1);odswiezListePlikow();
-      if(wczytanePliki.length)analizuj();else $("wyniki").classList.add("ukryty");});
-    box.appendChild(el);});
-}
-$("wyczysc").addEventListener("click",()=>{wczytanePliki=[];odswiezListePlikow();$("wyniki").classList.add("ukryty");schowajBlad();});
+    el.innerHTML="<span>📎 <b>"+esc(p.nazwa)+"</b> ("+p.wiersze.length+")</span><span class='x'>✕</span>";
+    el.querySelector(".x").addEventListener("click",()=>{wczytanePliki.splice(i,1);odswiezListePlikow();if(wczytanePliki.length)analizuj();else{ostatniMeta=null;$("podsum").textContent="";render();}});
+    box.appendChild(el);});}
+$("wyczysc").addEventListener("click",()=>{wczytanePliki=[];odswiezListePlikow();ostatniMeta=null;$("podsum").textContent="";render();schowajBlad();});
 $("data").addEventListener("change",()=>{if(wczytanePliki.length)analizuj();});
 $("pomijBezpl").addEventListener("change",()=>{if(wczytanePliki.length)analizuj();});
-["f-przysz","szukaj","f-terap","f-usluga","f-minwiz","f-od","f-do","f-status","pokazZamkniete"].forEach(id=>{$(id).addEventListener("input",render);$(id).addEventListener("change",render);});
-$("reset").addEventListener("click",()=>{$("f-przysz").value="wsz";$("szukaj").value="";$("f-terap").value="";$("f-usluga").value="";$("f-minwiz").value="1";$("f-od").value="";$("f-do").value="";$("f-status").value="";render();});
+["szukaj","fStatus","pokazZalatwione","przypWszystkie"].forEach(id=>{$(id).addEventListener("input",render);$(id).addEventListener("change",render);});
 $("pobierz").addEventListener("click",pobierzExcel);
-$("przypWszystkie").addEventListener("change",renderPrzypomnienia);
 
-// ---- panel przypomnień (widoczny w aplikacji) ----
-function renderPrzypomnienia(){
-  if(!ostatniWynik){$("przypKarta").classList.add("ukryty");return;}
-  const dzisIso=$("data").value;const pokazWsz=$("przypWszystkie").checked;
-  const wpis=Object.keys(notatki).map(pac=>({pac,...notatki[pac]}))
-    .filter(n=>n.przypomnienie).sort((a,b)=>a.przypomnienie.localeCompare(b.przypomnienie));
-  const widoczne=pokazWsz?wpis:wpis.filter(n=>n.przypomnienie<=dzisIso);
-  const box=$("przypLista");box.innerHTML="";
-  if(!widoczne.length){
-    if(!wpis.length){$("przypKarta").classList.add("ukryty");return;}
-    $("przypKarta").classList.remove("ukryty");
-    $("przypLicznik").textContent="— brak na dziś (zaznacz „Pokaż też przyszłe”, jest ich "+wpis.length+")";
-    return;
-  }
-  $("przypKarta").classList.remove("ukryty");
-  const zalegle=widoczne.filter(n=>n.przypomnienie<=dzisIso).length;
-  $("przypLicznik").textContent="— "+widoczne.length+(zalegle?" (na dziś/zaległe: "+zalegle+")":"");
-  widoczne.forEach(n=>{
-    const pilne=n.przypomnienie<=dzisIso;
-    const el=document.createElement("div");el.className="przypWiersz";
-    el.innerHTML='<span class="data'+(pilne?' pilne':'')+'">'+n.przypomnienie+'</span>'+
-      '<span class="pac">'+esc(n.pac)+'</span>'+
-      '<span class="nb">'+(n.notatka?esc(n.notatka):'<i style=\"color:#98a\">bez notatki</i>')+'</span>'+
-      '<button class="miniBtn b-otworz">✎ Edytuj</button>'+
-      '<button class="miniBtn b-google">📅 Google</button>'+
-      '<button class="miniBtn b-ics">📥 .ics</button>'+
-      '<button class="miniBtn b-zrob">✓ Zrobione</button>';
-    el.querySelector(".b-otworz").addEventListener("click",()=>otworzModal(n.pac));
-    el.querySelector(".b-google").addEventListener("click",()=>otworzGoogle(n.pac,n.przypomnienie,n.notatka));
-    el.querySelector(".b-ics").addEventListener("click",()=>generujICS(n.pac,n.przypomnienie,n.notatka));
-    el.querySelector(".b-zrob").addEventListener("click",()=>{
-      notatki[n.pac]={...noteFor(n.pac),status:"zadzwoniono",przypomnienie:""};syncPacjent(n.pac);render();});
-    box.appendChild(el);
-  });
-}
-
-// ---- modal notatki ----
-let modalPac=null;
-function otworzModal(pac){modalPac=pac;const n=noteFor(pac);
-  $("modalKto").textContent=pac;
-  $("mStatus").value=n.status||"do";$("mPrzyp").value=n.przypomnienie||"";$("mNotatka").value=n.notatka||"";
-  $("modalTlo").classList.add("pokaz");}
-function zamknijModal(){$("modalTlo").classList.remove("pokaz");modalPac=null;}
-$("mAnuluj").addEventListener("click",zamknijModal);
-$("modalTlo").addEventListener("click",(e)=>{if(e.target===$("modalTlo"))zamknijModal();});
-$("mZapisz").addEventListener("click",()=>{
-  if(!modalPac)return;const p=modalPac;
-  notatki[p]={status:$("mStatus").value,przypomnienie:$("mPrzyp").value,notatka:$("mNotatka").value.trim()};
-  if(notatki[p].status==="do"&&!notatki[p].przypomnienie&&!notatki[p].notatka)delete notatki[p];
-  syncPacjent(p);zamknijModal();render();});
-$("mUsun").addEventListener("click",()=>{if(modalPac){const p=modalPac;delete notatki[p];syncPacjent(p);zamknijModal();render();}});
-$("mKalendarz").addEventListener("click",()=>{
-  const d=$("mPrzyp").value;if(!d){alert("Najpierw ustaw datę przypomnienia.");return;}
-  generujICS(modalPac,d,$("mNotatka").value.trim());});
-$("mGoogle").addEventListener("click",()=>{
-  const d=$("mPrzyp").value;if(!d){alert("Najpierw ustaw datę przypomnienia.");return;}
-  otworzGoogle(modalPac,d,$("mNotatka").value.trim());});
-
-// ---- Google Kalendarz (gotowe wydarzenie, bez logowania/API) ----
-function otworzGoogle(pac,dateIso,notatka){
-  const dt=dateIso.replace(/-/g,"");
-  const p=new URLSearchParams();
-  p.set("action","TEMPLATE");
-  p.set("text","Zadzwonić: "+pac);
-  p.set("dates",dt+"T090000/"+dt+"T091500");
-  p.set("ctz","Europe/Warsaw");
-  p.set("details",notatka?notatka:"Przypomnienie o telefonie do pacjenta (panel rezerwacji).");
-  window.open("https://calendar.google.com/calendar/render?"+p.toString(),"_blank");
-}
-
-// ---- plik .ics do kalendarza ----
-function generujICS(pac,dateIso,notatka){
-  const dt=dateIso.replace(/-/g,"");
-  const dstart=dt+"T090000";const dend=dt+"T091500";
-  const uid=dt+"-"+pac.replace(/[^a-zA-Z0-9]/g,"")+"@panel-rezerwacji";
-  const opis=(notatka||"").replace(/\r?\n/g," ").replace(/,/g,"\\,").replace(/;/g,"\\;");
-  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Panel rezerwacji//PL","CALSCALE:GREGORIAN",
-    "BEGIN:VEVENT","UID:"+uid,"DTSTART:"+dstart,"DTEND:"+dend,
-    "SUMMARY:Zadzwonić: "+pac,opis?("DESCRIPTION:"+opis):"DESCRIPTION:Przypomnienie o telefonie",
-    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Zadzwonić: "+pac,"TRIGGER:PT0M","END:VALARM",
-    "END:VEVENT","END:VCALENDAR"].filter(Boolean).join("\r\n");
-  pobierzTekst("przypomnienie_"+pac.replace(/[^a-zA-Z0-9]/g,"_")+"_"+dateIso+".ics",ics,"text/calendar");
-}
-function pobierzTekst(nazwa,tresc,mime){
-  const blob=new Blob([tresc],{type:mime+";charset=utf-8"});const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");a.href=url;a.download=nazwa;document.body.appendChild(a);a.click();
-  document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1500);}
-
-// ---- kopia zapasowa notatek (przenoszenie / współdzielenie) ----
-$("kopiaZapis").addEventListener("click",()=>{
-  pobierzTekst("notatki_panel_rezerwacji.json",JSON.stringify(notatki,null,2),"application/json");});
-$("kopiaWczytaj").addEventListener("click",()=>$("kopiaPlik").click());
-$("kopiaPlik").addEventListener("change",()=>{
-  const f=$("kopiaPlik").files[0];if(!f)return;const rd=new FileReader();
-  rd.onload=(e)=>{try{const o=JSON.parse(e.target.result);
-    if(o&&typeof o==="object"){Object.keys(o).forEach(k=>{notatki[k]=o[k];syncPacjent(k);});
-      if(ostatniWynik)render();alert("Wczytano notatki do wspólnej listy.");}
-    }catch(err){alert("Nie udało się wczytać pliku: "+err.message);}
-    $("kopiaPlik").value="";};
-  rd.readAsText(f);});
-
-// pomocnicze
-function parsujDate(v){if(v==null)return null;if(v instanceof Date)return isNaN(v)?null:v;
-  const m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);if(!m)return null;
-  return new Date(+m[1],+m[2]-1,+m[3],m[4]?+m[4]:0,m[5]?+m[5]:0,0,0);}
-function parsujKwote(v){if(v==null)return 0;let s=String(v).replace(/[\s ]/g,"");
-  if(s.indexOf(",")>=0)s=s.replace(/\./g,"").replace(",",".");const n=parseFloat(s);return isNaN(n)?0:n;}
-function isoDnia(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function etykMies(k){const[r,m]=k.split("-");return MIES_PL[+m-1]+" "+r;}
-function modaTekst(arr){const l={};let b=null,bn=0;arr.forEach(x=>{if(!x)return;l[x]=(l[x]||0)+1;if(l[x]>bn){bn=l[x];b=x;}});return b||"";}
-// klucz pacjenta odporny na polskie znaki, wielkość liter i spacje (scala np. „Fijoł” i „Fijol”)
-function normKey(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ł/g,"l").replace(/Ł/g,"l").toLowerCase().replace(/\s+/g," ").trim();}
-// odległość edycyjna (Levenshtein) — do wykrywania literówek
-function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
-  let prev=Array.from({length:n+1},(_,j)=>j),cur=new Array(n+1).fill(0);
-  for(let i=1;i<=m;i++){cur[0]=i;for(let j=1;j<=n;j++){const c=a[i-1]===b[j-1]?0:1;
-    cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+c);}var t=prev;prev=cur;cur=t;}
-  return prev[n];}
-function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
-function zl(n){return Math.round(n).toLocaleString("pl-PL")+" zł";}
-
-// analiza
+// ---- analiza: kto bez wizyty od dziś w przód -> dodaj do wspólnej listy ----
 function analizuj(){
   if(!wczytanePliki.length)return;
-  const pomijBezpl=$("pomijBezpl").checked;
-  const widziane=new Set(),surowe=[];let liczbaBezpl=0;
+  const pomijB=$("pomijBezpl").checked;
+  const widziane=new Set(),surowe=[];let liczbaB=0;
   wczytanePliki.forEach(p=>p.wiersze.forEach(r=>{
     const nr=r[KOL.nr]!=null?String(r[KOL.nr]).trim():"";
-    const klucz=nr||(String(r[KOL.pacjent])+"|"+String(r[KOL.data]));
-    if(widziane.has(klucz))return;widziane.add(klucz);
-    if(pomijBezpl&&jestBezplatna(r)){liczbaBezpl++;return;}
+    const kl=nr||(String(r[KOL.pacjent])+"|"+String(r[KOL.data]));
+    if(widziane.has(kl))return;widziane.add(kl);
+    if(pomijB&&jestBezplatna(r)){liczbaB++;return;}
     surowe.push(r);}));
-
   const ref=parsujDate($("data").value+" 00:00");
-  const doPon=(ref.getDay()+6)%7;
-  const ponBiez=new Date(ref.getFullYear(),ref.getMonth(),ref.getDate()-doPon,0,0,0,0);
-  const ponPrzysz=new Date(ponBiez);ponPrzysz.setDate(ponPrzysz.getDate()+7);
-  const koniec=new Date(ponBiez);koniec.setDate(koniec.getDate()+14);
-
-  const rows=[];
+  const info={};let minDt=null,maxDt=null;
   surowe.forEach(r=>{const dt=parsujDate(r[KOL.data]);const pac=(r[KOL.pacjent]==null?"":String(r[KOL.pacjent])).trim();
     if(!dt||!pac)return;
-    rows.push({pac,klucz:normKey(pac),dt,kwota:parsujKwote(r[KOL.platnosc]),
-      godz:r[KOL.godzina]!=null?String(r[KOL.godzina]):"",
-      terap:r[KOL.terapeuta]!=null?String(r[KOL.terapeuta]):"",
-      usluga:r[KOL.usluga]!=null?String(r[KOL.usluga]):"",
-      przeszla:dt<ponBiez,w2tyg:dt>=ponBiez&&dt<koniec,przyszla:dt>=ponBiez});});
+    if(!minDt||dt<minDt)minDt=dt;if(!maxDt||dt>maxDt)maxDt=dt;
+    const k=normKey(pac);if(!info[k])info[k]={klucz:k,nazwy:[],przesz:[],hasPast:false,hasFuture:false};
+    info[k].nazwy.push(pac);
+    const rec={dt,godz:r[KOL.godzina]!=null?String(r[KOL.godzina]):"",terap:r[KOL.terapeuta]!=null?String(r[KOL.terapeuta]):"",usluga:r[KOL.usluga]!=null?String(r[KOL.usluga]):""};
+    if(dt<ref){info[k].hasPast=true;info[k].przesz.push(rec);}else{info[k].hasFuture=true;}});
 
-  // grupowanie po kluczu (scala różne pisownie tego samego nazwiska)
-  const mieliPrzeszle=new Set(rows.filter(r=>r.przeszla).map(r=>r.klucz));
-  const umowieni2=new Set(rows.filter(r=>r.w2tyg).map(r=>r.klucz));
-  const doDzwonienia=[...mieliPrzeszle].filter(k=>!umowieni2.has(k));
-  const lista=doDzwonienia.map(klucz=>{const wp=rows.filter(r=>r.klucz===klucz);
-    const nazwa=modaTekst(wp.map(r=>r.pac));  // najczęstsza pisownia jako nazwa wyświetlana
-    const przeszle=wp.filter(r=>r.przeszla).sort((a,b)=>a.dt-b.dt);const ost=przeszle[przeszle.length-1];
-    const przyszle=wp.filter(r=>r.przyszla).sort((a,b)=>a.dt-b.dt);const nast=przyszle[0]||null;
-    return{pac:nazwa,ostData:isoDnia(ost.dt),ostGodz:ost.godz,terapeuta:modaTekst(przeszle.map(r=>r.terap)),
-      usluga:ost.usluga,liczba:przeszle.length,maPrzyszla:!!nast,
-      nastData:nast?isoDnia(nast.dt):"",nastGodz:nast?nast.godz:"",nastTerap:nast?nast.terap:""};});
+  const booked=new Set(),toContact=[];
+  Object.values(info).forEach(v=>{if(v.hasFuture)booked.add(v.klucz);if(v.hasPast&&!v.hasFuture)toContact.push(v);});
 
-  // wykrywanie możliwych duplikatów nazwisk (par, których NIE scalono automatycznie)
-  const naLiscie=new Set(doDzwonienia);
-  const kInfo={};
-  rows.forEach(r=>{if(!kInfo[r.klucz])kInfo[r.klucz]={klucz:r.klucz,nazwy:[],wizyty:0};
-    kInfo[r.klucz].nazwy.push(r.pac);kInfo[r.klucz].wizyty++;});
-  const klucze=Object.keys(kInfo);
-  klucze.forEach(k=>{kInfo[k].nazwa=modaTekst(kInfo[k].nazwy);kInfo[k].tokeny=k.split(" ").filter(Boolean).sort().join(" ");});
-  const duplikaty=[];
-  for(let i=0;i<klucze.length;i++)for(let j=i+1;j<klucze.length;j++){
-    const a=kInfo[klucze[i]],b=kInfo[klucze[j]];let powod=null;
-    if(a.tokeny&&a.tokeny===b.tokeny)powod="Te same słowa, inna kolejność/zapis";
-    else{const d=lev(a.klucz,b.klucz);if(d>0&&d<=2&&Math.min(a.klucz.length,b.klucz.length)>=6)powod="Podobna pisownia (możliwa literówka)";}
-    if(powod){const wplyw=naLiscie.has(a.klucz)||naLiscie.has(b.klucz);
-      duplikaty.push({aNazwa:a.nazwa,aWiz:a.wizyty,bNazwa:b.nazwa,bWiz:b.wizyty,powod,wplyw});}
-  }
-  duplikaty.sort((x,y)=>(y.wplyw-x.wplyw)||x.aNazwa.localeCompare(y.aNazwa,"pl"));
+  const doSync=[];const teraz=new Date().toISOString();
+  // AUTO: pacjent z listy, który ma już wizytę w przód -> zamknij (umówiony, z pliku)
+  Object.keys(notatki).forEach(k=>{if(!TERMINAL.has(notatki[k].status)&&booked.has(k)){
+    notatki[k]={...notatki[k],status:"umowiono"};meta[k]={by:"(plik)",at:teraz};doSync.push(k);}});
+  // AUTO: dodaj/odśwież pacjentów do kontaktu
+  toContact.forEach(v=>{const k=v.klucz;const nazwa=modaTekst(v.nazwy);
+    const przeszle=v.przesz.sort((a,b)=>a.dt-b.dt);const ost=przeszle[przeszle.length-1];
+    dane[k]={pac:nazwa,ostData:isoDnia(ost.dt),ostGodz:ost.godz,terapeuta:modaTekst(v.przesz.map(r=>r.terap)),usluga:ost.usluga,liczba:przeszle.length};
+    if(!notatki[k]){notatki[k]={status:"do",notatka:"",przypomnienie:""};meta[k]={by:"(plik)",at:teraz};}
+    doSync.push(k);});
+  if(doSync.length)syncWiele([...new Set(doSync)]);
 
-  // agregacja miesięczna
-  const mm={};
-  rows.forEach(r=>{const k=r.dt.getFullYear()+"-"+String(r.dt.getMonth()+1).padStart(2,"0");
-    if(!mm[k])mm[k]={wizyty:0,przychod:0};mm[k].wizyty++;mm[k].przychod+=r.kwota;});
-  const miesiace=Object.keys(mm).sort().map(k=>({m:k,wizyty:mm[k].wizyty,przychod:mm[k].przychod}));
-
-  ostatniWynik={lista,miesiace,duplikaty,meta:{ponBiez,ponPrzysz,koniec,
-    zPrzeszloscia:mieliPrzeszle.size,umowieni2:umowieni2.size,
-    doDzwonienia:doDzwonienia.length,bezPrzyszlej:lista.filter(x=>!x.maPrzyszla).length}};
-  const dupIle=duplikaty.length,dupWpl=duplikaty.filter(d=>d.wplyw).length;
-  $("dupBadge").textContent=dupIle?("("+dupIle+(dupWpl?", w tym "+dupWpl+" istotnych":"")+")"):"";
-  $("dupBadge").style.cssText=dupWpl?"background:var(--czerwony);color:#fff;border-radius:20px;padding:1px 8px;font-size:12px;font-weight:700":"color:var(--szary);font-weight:600";
-
-  wypelnijSelect("f-terap",[...new Set(lista.map(x=>x.terapeuta).filter(Boolean))].sort());
-  wypelnijSelect("f-usluga",[...new Set(lista.map(x=>x.usluga).filter(Boolean))].sort());
-  const npl=wczytanePliki.length;
-  $("statusPlikow").textContent=npl+" plik"+(npl===1?"":(npl<5?"i":"ów"))+" • "+surowe.length+" rezerwacji po deduplikacji"+(pomijBezpl&&liczbaBezpl?" • pominięto "+liczbaBezpl+" bezpłatnych":"");
+  const aktywni=Object.keys(notatki).filter(k=>!TERMINAL.has(notatki[k].status)).length;
+  ostatniMeta={minDt,maxDt,wszyscy:Object.keys(info).length,przeszli:Object.values(info).filter(v=>v.hasPast).length,booked:booked.size,doKontaktu:toContact.length,aktywni,liczbaB:pomijB?liczbaB:0};
   render();
-  if(!$("sek-trendy").classList.contains("ukryty"))renderTrendy();
 }
-function wypelnijSelect(id,w){const s=$(id);const b=s.value;const p=s.options[0].outerHTML;
-  s.innerHTML=p+w.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");
-  if([...s.options].some(o=>o.value===b))s.value=b;}
-function fmt(d){return isoDnia(d);}
 
-// ---- tabela do zadzwonienia ----
-function filtrujLista(baza){const lista=baza||listaRobocza();const przysz=$("f-przysz").value;const q=$("szukaj").value.trim().toLowerCase();
-  const terap=$("f-terap").value;const usl=$("f-usluga").value;const minw=parseInt($("f-minwiz").value||"1",10);
-  const od=$("f-od").value,doo=$("f-do").value;const stat=$("f-status").value;
-  return lista.filter(x=>{
-    if(przysz==="bez"&&x.maPrzyszla)return false;if(przysz==="ma"&&!x.maPrzyszla)return false;
-    if(q&&!x.pac.toLowerCase().includes(q))return false;if(terap&&x.terapeuta!==terap)return false;
-    if(usl&&x.usluga!==usl)return false;if(x.liczba<minw)return false;
-    if(od&&x.ostData<od)return false;if(doo&&x.ostData>doo)return false;
-    if(stat&&noteFor(x.pac).status!==stat)return false;return true;});}
-function sortuj(arr){const dom=(a,b)=>{if(a.maPrzyszla!==b.maPrzyszla)return a.maPrzyszla?1:-1;return b.ostData.localeCompare(a.ostData);};
-  if(sortKol==="auto")return arr.sort(dom);
-  return arr.sort((a,b)=>{let va=a[sortKol],vb=b[sortKol];
-    if(sortKol==="liczba")return(va-vb)*sortDir;
-    if(sortKol==="maPrzyszla"){va=va?1:0;vb=vb?1:0;return(va-vb)*sortDir;}
-    return String(va).localeCompare(String(vb),"pl")*sortDir;});}
+// ---- lista ----
+function listaAktywna(){
+  const pokazZ=$("pokazZalatwione").checked;
+  return Object.keys(notatki).filter(k=>dane[k]).map(k=>({klucz:k,...dane[k],...notatki[k],by:(meta[k]||{}).by,at:(meta[k]||{}).at}))
+    .filter(x=>pokazZ?true:!TERMINAL.has(x.status));
+}
 function render(){
-  if(!ostatniWynik)return;const{meta}=ostatniWynik;$("wyniki").classList.remove("ukryty");
-  const konB=new Date(meta.ponPrzysz);konB.setDate(konB.getDate()-1);
-  const konP=new Date(meta.koniec);konP.setDate(konP.getDate()-1);
-  $("zakres").innerHTML="Bieżący tydzień: <b>"+fmt(meta.ponBiez)+" – "+fmt(konB)+"</b> &nbsp;|&nbsp; Przyszły tydzień: <b>"+fmt(meta.ponPrzysz)+" – "+fmt(konP)+"</b>";
-  $("k-przeszli").textContent=meta.zPrzeszloscia;$("k-umowieni").textContent=meta.umowieni2;
-  $("k-dzwonic").textContent=meta.doDzwonienia;$("k-bezprzysz").textContent=meta.bezPrzyszlej;
-  const baza=listaRobocza();
-  const moja=sortuj(filtrujLista(baza.filter(x=>dotkniety(x.pac))));
-  const nowi=sortuj(filtrujLista(baza.filter(x=>!dotkniety(x.pac))));
-  $("licznikMoja").textContent="— "+moja.length;
-  $("licznikNowi").textContent="— "+nowi.length;
-  $("licznik").textContent="— moja lista: "+moja.length+" • nowi z pliku: "+nowi.length;
-  document.querySelectorAll("#thead-moja th, #thead-nowi th").forEach(th=>{const s=th.querySelector(".strz");if(s)s.textContent=(th.dataset.k===sortKol)?(sortDir>0?"▲":"▼"):"";});
+  const zal=$("podsum");
+  if(ostatniMeta){
+    const zb=(ostatniMeta.minDt&&ostatniMeta.maxDt)?(" (zakres w pliku: "+isoDnia(ostatniMeta.minDt)+" – "+isoDnia(ostatniMeta.maxDt)+")"):"";
+    zal.innerHTML="Z pliku: <b>"+ostatniMeta.doKontaktu+"</b> pacjentów bez umówionej wizyty od dziś w przód"+zb+
+      (ostatniMeta.liczbaB?" • pominięto "+ostatniMeta.liczbaB+" bezpłatnych":"")+".";
+  }
+  const q=$("szukaj").value.trim().toLowerCase();const fs=$("fStatus").value;
+  let lista=listaAktywna();
+  if(q)lista=lista.filter(x=>String(x.pac).toLowerCase().includes(q));
+  if(fs)lista=lista.filter(x=>x.status===fs);
+  lista.sort((a,b)=>{const ta=TERMINAL.has(a.status),tb=TERMINAL.has(b.status);if(ta!==tb)return ta?1:-1;
+    return String(b.ostData||"").localeCompare(String(a.ostData||""));});
+  const aktywni=listaAktywna().filter(x=>!TERMINAL.has(x.status)).length;
+  $("licznik").textContent="— "+aktywni+" do skontaktowania"+(lista.length!==aktywni?" • pokazano "+lista.length:"");
   const dzisIso=$("data").value;
-  wypelnijTabele("tbodyMoja",moja,dzisIso);
-  wypelnijTabele("tbodyNowi",nowi,dzisIso);
-  $("pustoMoja").classList.toggle("ukryty",moja.length>0);
-  $("pustoNowi").classList.toggle("ukryty",nowi.length>0);
+  const tb=$("tbody");tb.innerHTML="";
+  lista.forEach(x=>{const tr=document.createElement("tr");if(TERMINAL.has(x.status))tr.classList.add("zamk");
+    const sub='<div class="podw">ost. wizyta: '+(x.ostData||"?")+(x.ostGodz?" · "+esc(x.ostGodz):"")+(x.terapeuta?" · "+esc(x.terapeuta):"")+(x.usluga?" · "+esc(x.usluga):"")+(x.liczba?" · "+x.liczba+" wiz.":"")+'</div>';
+    let srodek='<select class="statusSel" data-k="'+esc(x.klucz)+'" data-s="'+x.status+'">'+
+      Object.keys(STATUS_ETYK).map(s=>'<option value="'+s+'"'+(s===x.status?" selected":"")+'>'+STATUS_ETYK[s]+'</option>').join("")+'</select>';
+    if(x.przypomnienie){const pilne=x.przypomnienie<=dzisIso;srodek+='<div class="przyp'+(pilne?" pilne":"")+'">⏰ '+x.przypomnienie+(pilne?" (dziś/zaległe)":"")+'</div>';}
+    if(x.notatka)srodek+='<div class="notka">'+esc(x.notatka)+'</div>';
+    if(x.by)srodek+='<div class="ozn">ozn. '+esc(nazwaUzyt(x.by))+(x.at?" · "+fmtKiedy(x.at):"")+'</div>';
+    tr.innerHTML='<td><span class="nazwisko">'+esc(x.pac)+'</span>'+sub+'</td><td>'+srodek+'</td>'+
+      '<td><button class="edytujBtn" data-k="'+esc(x.klucz)+'">✎ Notatka / przypomnienie</button></td>';
+    tr.querySelector(".statusSel").addEventListener("change",(e)=>zmienStatus(x.klucz,e.target.value));
+    tr.querySelector(".edytujBtn").addEventListener("click",()=>otworzModal(x.klucz));
+    tb.appendChild(tr);});
+  if(!lista.length&&ostatniMeta)$("pusto").textContent="Brak pacjentów do skontaktowania w tym zakresie. 🎉";
+  else if(!ostatniMeta)$("pusto").textContent="Wgraj plik z Bookero, aby zobaczyć listę pacjentów do skontaktowania.";
+  $("pusto").classList.toggle("ukryty",lista.length>0);
   renderPrzypomnienia();
 }
-// czy pacjent jest już na liście roboczej (ma notatkę/status)
-function dotkniety(pac){const n=notatki[pac];return !!(n&&(n.notatka||n.przypomnienie||(n.status&&n.status!=="do")));}
-function wypelnijTabele(tbodyId,arr,dzisIso){
-  const tb=$(tbodyId);tb.innerHTML="";
-  arr.forEach(x=>{const tr=document.createElement("tr");if(!x.maPrzyszla)tr.className="bez-przyszlej";
-    if(x.zrodlo==="zamkniete")tr.classList.add("row-zamk");
-    const ostInfo='<div>'+x.ostData+(x.ostGodz?' · '+esc(x.ostGodz):"")+'</div>'+
-      '<div class="podw">'+esc(x.terapeuta)+(x.usluga?' · '+esc(x.usluga):"")+'</div>';
-    const przysz=x.maPrzyszla
-      ? '<span class="tag tak">TAK — '+x.nastData+'</span>'+((x.nastGodz||x.nastTerap)?'<div class="podw">'+esc(x.nastGodz)+(x.nastTerap?' · '+esc(x.nastTerap):"")+'</div>':"")
-      : '<span class="tag nie">brak</span>';
-    let znacznik="";
-    if(x.zrodlo==="historia")znacznik='<div class="podw" style="color:var(--granat)">↩ utrzymany z historii</div>';
-    else if(x.zrodlo==="zamkniete")znacznik='<div class="podw" style="color:var(--zielony)">✔ zamknięty</div>';
-    tr.innerHTML='<td class="nazwisko">'+esc(x.pac)+znacznik+'</td>'+komorkaNotatki(x.pac,dzisIso)+
-      '<td>'+ostInfo+'</td>'+
-      '<td style="text-align:center">'+x.liczba+'</td>'+
-      '<td>'+przysz+'</td>';
-    tr.querySelector(".edytujBtn").addEventListener("click",()=>otworzModal(x.pac));
-    const chk=tr.querySelector(".umowionyChk");
-    if(chk)chk.addEventListener("change",()=>{
-      const n=Object.assign({},noteFor(x.pac));
-      n.status=chk.checked?"umowiono":"do";
-      notatki[x.pac]=n;syncPacjent(x.pac);render();});
-    tb.appendChild(tr);});
-}
-function komorkaNotatki(pac,dzisIso){
-  const n=noteFor(pac);
-  const maCos=n.notatka||n.przypomnienie||(n.status&&n.status!=="do");
-  let head="";
-  if(maCos){
-    head='<span class="stat '+n.status+'">'+esc(STATUS_ETYK[n.status]||STATUS_ETYK.do)+'</span>';
-    if(n.przypomnienie){const pilne=n.przypomnienie<=dzisIso;
-      head+='<div class="komPrzyp'+(pilne?' pilne':'')+'">⏰ '+n.przypomnienie+(pilne?' (dziś/zaległe)':'')+'</div>';}
-    if(n.notatka)head+='<div class="komNotatka">'+esc(n.notatka)+'</div>';
-    const m=metaChmura[pac];
-    if(m&&m.by)head+='<div class="podw" style="color:#7a8aa0">ozn. '+esc(nazwaUzyt(m.by))+(m.at?' · '+fmtKiedy(m.at):"")+'</div>';
-  }
-  const chk='<label class="umowionyLbl"><input type="checkbox" class="umowionyChk"'+(n.status==="umowiono"?" checked":"")+'> Umówiony</label>';
-  const btn=maCos?'<button class="edytujBtn">✎ Edytuj</button>':'<button class="edytujBtn dodaj">➕ Dodaj notatkę / przypomnienie</button>';
-  return '<td class="komTd">'+head+'<div class="komAkcje">'+chk+btn+'</div></td>';
+function zmienStatus(k,s){if(!notatki[k])return;notatki[k]={...notatki[k],status:s};meta[k]={by:uzytkownik,at:new Date().toISOString()};syncPacjent(k);render();}
+
+// ---- modal ----
+let modalK=null;
+function otworzModal(k){modalK=k;const n=notatki[k]||{status:"do",notatka:"",przypomnienie:""};
+  $("modalKto").textContent=(dane[k]&&dane[k].pac)||k;
+  $("mStatus").value=n.status||"do";$("mPrzyp").value=n.przypomnienie||"";$("mNotatka").value=n.notatka||"";
+  $("modalTlo").classList.add("pokaz");}
+function zamknijModal(){$("modalTlo").classList.remove("pokaz");modalK=null;}
+$("mAnuluj").addEventListener("click",zamknijModal);
+$("modalTlo").addEventListener("click",e=>{if(e.target===$("modalTlo"))zamknijModal();});
+$("mZapisz").addEventListener("click",()=>{if(!modalK)return;const k=modalK;
+  notatki[k]={status:$("mStatus").value,przypomnienie:$("mPrzyp").value,notatka:$("mNotatka").value.trim()};
+  meta[k]={by:uzytkownik,at:new Date().toISOString()};syncPacjent(k);zamknijModal();render();});
+$("mUsun").addEventListener("click",()=>{if(!modalK)return;const k=modalK;delete notatki[k];syncPacjent(k);zamknijModal();render();});
+$("mKalendarz").addEventListener("click",()=>{const d=$("mPrzyp").value;if(!d){alert("Najpierw ustaw datę przypomnienia.");return;}generujICS(modalK,d,$("mNotatka").value.trim());});
+$("mGoogle").addEventListener("click",()=>{const d=$("mPrzyp").value;if(!d){alert("Najpierw ustaw datę przypomnienia.");return;}otworzGoogle(modalK,d,$("mNotatka").value.trim());});
+
+// ---- przypomnienia ----
+function renderPrzypomnienia(){
+  const dzisIso=$("data").value;const pokazWsz=$("przypWszystkie").checked;
+  const wpis=Object.keys(notatki).filter(k=>notatki[k].przypomnienie&&!TERMINAL.has(notatki[k].status))
+    .map(k=>({klucz:k,pac:(dane[k]&&dane[k].pac)||k,...notatki[k]})).sort((a,b)=>a.przypomnienie.localeCompare(b.przypomnienie));
+  const widoczne=pokazWsz?wpis:wpis.filter(n=>n.przypomnienie<=dzisIso);
+  const box=$("przypLista");box.innerHTML="";
+  if(!wpis.length){$("przypKarta").classList.add("ukryty");return;}
+  $("przypKarta").classList.remove("ukryty");
+  if(!widoczne.length){$("przypLicznik").textContent="— brak na dziś (zaznacz „Pokaż też przyszłe” — jest ich "+wpis.length+")";return;}
+  const zalegle=widoczne.filter(n=>n.przypomnienie<=dzisIso).length;
+  $("przypLicznik").textContent="— "+widoczne.length+(zalegle?" (na dziś/zaległe: "+zalegle+")":"");
+  widoczne.forEach(n=>{const pilne=n.przypomnienie<=dzisIso;const el=document.createElement("div");el.className="przypWiersz";
+    el.innerHTML='<span class="data'+(pilne?" pilne":"")+'">'+n.przypomnienie+'</span><span class="pac">'+esc(n.pac)+'</span>'+
+      '<span class="nb">'+(n.notatka?esc(n.notatka):'<i style="color:#98a">bez notatki</i>')+'</span>'+
+      '<button class="miniBtn b-ot">✎ Edytuj</button><button class="miniBtn b-g">📅 Google</button><button class="miniBtn b-z">✓ Zrobione</button>';
+    el.querySelector(".b-ot").addEventListener("click",()=>otworzModal(n.klucz));
+    el.querySelector(".b-g").addEventListener("click",()=>otworzGoogle(n.pac,n.przypomnienie,n.notatka));
+    el.querySelector(".b-z").addEventListener("click",()=>{notatki[n.klucz]={...notatki[n.klucz],status:"zadzwoniono",przypomnienie:""};meta[n.klucz]={by:uzytkownik,at:new Date().toISOString()};syncPacjent(n.klucz);render();});
+    box.appendChild(el);});
 }
 
-// ---- możliwe duplikaty ----
-function renderDuplikaty(){
-  if(!ostatniWynik)return;const d=ostatniWynik.duplikaty||[];
-  const ile=d.length,wpl=d.filter(x=>x.wplyw).length;
-  $("dupLicznik").textContent=ile?("— "+ile+" par"+(ile===1?"a":(ile<5?"y":""))+(wpl?" (istotnych: "+wpl+")":"")):"";
-  const tb=$("tbodyDup");tb.innerHTML="";
-  d.forEach(x=>{const tr=document.createElement("tr");if(x.wplyw)tr.className="bez-przyszlej";
-    const wpl=x.wplyw?'<span class="tag nie">wpływa na listę</span>':'<span class="tag tak">bez wpływu</span>';
-    tr.innerHTML='<td class="nazwisko">'+esc(x.aNazwa)+'</td><td style="text-align:center">'+x.aWiz+'</td>'+
-      '<td class="nazwisko">'+esc(x.bNazwa)+'</td><td style="text-align:center">'+x.bWiz+'</td>'+
-      '<td>'+esc(x.powod)+'</td><td>'+wpl+'</td>';
-    tb.appendChild(tr);});
-  $("dupPusto").classList.toggle("ukryty",ile>0);
-}
-
-// ---- trendy miesięczne ----
-function deltaBadge(cur,prev,jakoZl){
-  if(prev==null)return '<span class="delta plaski">— (pierwszy miesiąc)</span>';
-  const roz=cur-prev;const pct=prev!==0?(roz/prev*100):null;
-  const strz=roz>0?"▲":(roz<0?"▼":"■");const kl=roz>0?"up":(roz<0?"down":"plaski");
-  const wart=jakoZl?zl(Math.abs(roz)):Math.abs(roz);
-  const pctTxt=pct!==null?" ("+(roz>0?"+":"−")+Math.abs(pct).toFixed(1)+"%)":"";
-  return '<span class="delta '+kl+'">'+strz+' '+(roz>0?"+":(roz<0?"−":""))+wart+pctTxt+'</span>';
-}
-function renderTrendy(){
-  if(!ostatniWynik)return;const ms=ostatniWynik.miesiace;
-  if(!ms.length){$("kpiRzad").innerHTML="<p class='pusto'>Brak danych.</p>";return;}
-  $("trendZakres").textContent="— "+etykMies(ms[0].m)+" … "+etykMies(ms[ms.length-1].m);
-  const ost=ms[ms.length-1],poprz=ms.length>1?ms[ms.length-2]:null;
-
-  // KPI
-  $("kpiRzad").innerHTML=
-    kpi("Wizyty — "+etykMies(ost.m),ost.wizyty,deltaBadge(ost.wizyty,poprz?poprz.wizyty:null,false))+
-    kpi("Przychód — "+etykMies(ost.m),zl(ost.przychod),deltaBadge(ost.przychod,poprz?poprz.przychod:null,true))+
-    kpi("Śr. na wizytę — "+etykMies(ost.m),zl(ost.wizyty?ost.przychod/ost.wizyty:0),"");
-
-  // cel wzrostu
-  if(poprz){
-    const brakW=Math.max(0,(poprz.wizyty+1)-ost.wizyty);
-    const brakF=Math.max(0,(poprz.przychod+0.01)-ost.przychod);
-    $("celWizyty").innerHTML = ost.wizyty>poprz.wizyty
-      ? "✅ <b>Wizyty rosną.</b> "+etykMies(ost.m)+" ma o <b>"+(ost.wizyty-poprz.wizyty)+"</b> wizyt więcej niż "+etykMies(poprz.m)+"."
-      : "🎯 <b>Aby rosnąć w liczbie wizyt</b>, "+etykMies(ost.m)+" musi przekroczyć "+etykMies(poprz.m)+" ("+poprz.wizyty+"). Masz <b>"+ost.wizyty+"</b> — brakuje <b>"+brakW+"</b> wizyt.";
-    $("celFinanse").innerHTML = ost.przychod>poprz.przychod
-      ? "✅ <b>Przychód rośnie.</b> "+etykMies(ost.m)+" to o <b>"+zl(ost.przychod-poprz.przychod)+"</b> więcej niż "+etykMies(poprz.m)+"."
-      : "🎯 <b>Aby rosnąć finansowo</b>, "+etykMies(ost.m)+" musi przekroczyć "+etykMies(poprz.m)+" ("+zl(poprz.przychod)+"). Masz <b>"+zl(ost.przychod)+"</b> — brakuje <b>"+zl(brakF)+"</b>.";
-    $("celWizyty").classList.remove("ukryty");$("celFinanse").classList.remove("ukryty");
-  }else{
-    $("celWizyty").innerHTML="ℹ️ Wgraj co najmniej dwa miesiące, aby zobaczyć porównanie i cel wzrostu.";
-    $("celFinanse").classList.add("ukryty");
-  }
-
-  // wykresy
-  rysujSlupki("wykresWizyty",ms.map((x,i)=>({label:etykMies(x.m),value:x.wizyty,
-    delta:i>0?deltaBadge(x.wizyty,ms[i-1].wizyty,false):null,tt:x.wizyty+" wizyt"})),
-    getComputedStyle(document.documentElement).getPropertyValue("--wizyty").trim(),v=>Math.round(v).toString());
-  rysujSlupki("wykresFinanse",ms.map((x,i)=>({label:etykMies(x.m),value:x.przychod,
-    delta:i>0?deltaBadge(x.przychod,ms[i-1].przychod,true):null,tt:zl(x.przychod)})),
-    getComputedStyle(document.documentElement).getPropertyValue("--finanse").trim(),v=>zl(v));
-
-  // tabela
-  const tb=$("tbodyMies");tb.innerHTML="";
-  ms.forEach((x,i)=>{const p=i>0?ms[i-1]:null;
-    const dw=p?znak(x.wizyty-p.wizyty):"—";const df=p?znak(x.przychod-p.przychod,true):"—";
-    const tr=document.createElement("tr");
-    tr.innerHTML="<td><b>"+etykMies(x.m)+"</b></td><td style='text-align:right'>"+x.wizyty+
-      "</td><td style='text-align:right'>"+dw+"</td><td style='text-align:right'>"+zl(x.przychod)+
-      "</td><td style='text-align:right'>"+df+"</td><td style='text-align:right'>"+zl(x.wizyty?x.przychod/x.wizyty:0)+"</td>";
-    tb.appendChild(tr);});
-}
-function kpi(etyk,duza,delta){return '<div class="kpi"><div class="etyk">'+esc(etyk)+'</div><div class="duza">'+esc(String(duza))+'</div>'+delta+'</div>';}
-function znak(r,jakoZl){if(r===0)return "0";const s=r>0?"+":"−";const w=jakoZl?zl(Math.abs(r)):Math.abs(r);
-  const kol=r>0?"var(--up)":"var(--down)";return "<span style='color:"+kol+";font-weight:700'>"+s+w+"</span>";}
-
-// wykres słupkowy (SVG) z tooltipem
-function rysujSlupki(boxId,dane,kolor,fmtVal){
-  const box=$(boxId);const W=Math.max(box.clientWidth||760,360);const H=300;
-  const padT=54,padB=48,padL=14,padR=14;
-  const n=dane.length;const maxV=Math.max(1,...dane.map(d=>d.value))*1.2;
-  const area=W-padL-padR;const slot=area/n;const barW=Math.min(slot*0.55,90);
-  const baseY=H-padB;
-  let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Wykres słupkowy">';
-  // siatka pozioma (recesywna)
-  for(let g=0;g<=4;g++){const y=padT+(baseY-padT)*g/4;
-    svg+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="var(--grid)" stroke-width="1"/>';}
-  svg+='<line x1="'+padL+'" y1="'+baseY+'" x2="'+(W-padR)+'" y2="'+baseY+'" stroke="var(--baseline)" stroke-width="1.5"/>';
-  dane.forEach((d,i)=>{const cx=padL+slot*i+slot/2;const bh=(d.value/maxV)*(baseY-padT);
-    const x=cx-barW/2;const y=baseY-bh;
-    svg+='<rect class="slup" data-i="'+i+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="4" fill="'+kolor+'"><title>'+esc(d.label)+": "+esc(d.tt)+'</title></rect>';
-    // wartość nad słupkiem
-    svg+='<text x="'+cx.toFixed(1)+'" y="'+(y-8).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text-primary)" style="font-variant-numeric:tabular-nums">'+esc(fmtVal(d.value))+'</text>';
-    // etykieta miesiąca
-    svg+='<text x="'+cx.toFixed(1)+'" y="'+(baseY+20).toFixed(1)+'" text-anchor="middle" font-size="12.5" fill="var(--muted)">'+esc(d.label)+'</text>';
-    // delta pod etykietą
-    if(d.delta){const roz=d.value-dane[i-1].value;const kol=roz>0?"var(--up)":(roz<0?"var(--down)":"var(--muted)");
-      const strz=roz>0?"▲":(roz<0?"▼":"■");const pct=dane[i-1].value!==0?(roz/dane[i-1].value*100):null;
-      const txt=strz+" "+(pct!==null?(roz>0?"+":"−")+Math.abs(pct).toFixed(0)+"%":"");
-      svg+='<text x="'+cx.toFixed(1)+'" y="'+(baseY+37).toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="700" fill="'+kol+'">'+txt+'</text>';}
-  });
-  svg+='</svg>';box.innerHTML=svg;
-  // tooltip
-  const tip=$("vtip");
-  box.querySelectorAll(".slup").forEach(rect=>{
-    const i=+rect.dataset.i;const d=dane[i];
-    rect.addEventListener("mouseenter",()=>{rect.setAttribute("opacity","0.82");tip.style.opacity="1";
-      let extra=(i>0)?"<br>vs poprz.: "+(d.value-dane[i-1].value>=0?"+":"−")+(fmtVal(Math.abs(d.value-dane[i-1].value))):"";
-      tip.innerHTML="<b>"+esc(d.label)+"</b><br>"+esc(d.tt)+extra;});
-    rect.addEventListener("mousemove",(e)=>{tip.style.left=(e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";});
-    rect.addEventListener("mouseleave",()=>{rect.setAttribute("opacity","1");tip.style.opacity="0";});
-  });
-}
-window.addEventListener("resize",()=>{if(ostatniWynik&&!$("sek-trendy").classList.contains("ukryty"))renderTrendy();});
+// ---- kalendarz ----
+function otworzGoogle(pacLubK,dateIso,notatka){const pac=(dane[pacLubK]&&dane[pacLubK].pac)||pacLubK;
+  const dt=dateIso.replace(/-/g,"");const p=new URLSearchParams();
+  p.set("action","TEMPLATE");p.set("text","Zadzwonić: "+pac);p.set("dates",dt+"T090000/"+dt+"T091500");p.set("ctz","Europe/Warsaw");
+  p.set("details",notatka||"Przypomnienie o telefonie do pacjenta.");
+  window.open("https://calendar.google.com/calendar/render?"+p.toString(),"_blank");}
+function generujICS(pacLubK,dateIso,notatka){const pac=(dane[pacLubK]&&dane[pacLubK].pac)||pacLubK;
+  const dt=dateIso.replace(/-/g,"");const opis=(notatka||"").replace(/\r?\n/g," ").replace(/,/g,"\\,").replace(/;/g,"\\;");
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Panel//PL","BEGIN:VEVENT","UID:"+dt+"-"+normKey(pac).replace(/[^a-z0-9]/g,"")+"@panel",
+    "DTSTART:"+dt+"T090000","DTEND:"+dt+"T091500","SUMMARY:Zadzwonić: "+pac,"DESCRIPTION:"+(opis||"Przypomnienie o telefonie"),
+    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Zadzwonić: "+pac,"TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="przypomnienie_"+normKey(pac).replace(/[^a-z0-9]/g,"_")+"_"+dateIso+".ics";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1500);}
 
 // ---- eksport Excel ----
 function pobierzExcel(){
-  if(!ostatniWynik)return;const{meta,miesiace}=ostatniWynik;const widoczne=sortuj(filtrujLista(listaRobocza()));
-  const konB=new Date(meta.ponPrzysz);konB.setDate(konB.getDate()-1);
-  const konP=new Date(meta.koniec);konP.setDate(konP.getDate()-1);
-  const nag=["Pacjent","Ostatnia wizyta (data)","Ostatnia wizyta (godz.)","Terapeuta","Ostatnia usługa",
-    "Liczba przeszłych wizyt","Ma już przyszłą wizytę?","Najbliższa przyszła wizyta (data)","Najbliższa przyszła wizyta (godz.)","Najbliższa wizyta – terapeuta",
-    "Status kontaktu","Przypomnienie","Notatka"];
-  const dane=widoczne.map(x=>{const n=noteFor(x.pac);return [x.pac,x.ostData,x.ostGodz,x.terapeuta,x.usluga,x.liczba,
-    x.maPrzyszla?"TAK (poza 2 tyg.)":"NIE – brak przyszłej wizyty",x.nastData,x.nastGodz,x.nastTerap,
-    STATUS_ETYK[n.status]||STATUS_ETYK.do,n.przypomnienie||"",n.notatka||""];});
-  const ws1=XLSX.utils.aoa_to_sheet([nag,...dane]);
-  ws1["!cols"]=[{wch:28},{wch:16},{wch:14},{wch:22},{wch:26},{wch:12},{wch:24},{wch:18},{wch:18},{wch:22},{wch:16},{wch:14},{wch:40}];
-  ws1["!autofilter"]={ref:"A1:M"+(dane.length+1)};
-
-  const mRows=miesiace.map((x,i)=>{const p=i>0?miesiace[i-1]:null;
-    return [etykMies(x.m),x.wizyty,p?x.wizyty-p.wizyty:"",Math.round(x.przychod),
-      p?Math.round(x.przychod-p.przychod):"",Math.round(x.wizyty?x.przychod/x.wizyty:0)];});
-  const ws3=XLSX.utils.aoa_to_sheet([["Miesiąc","Wizyty","Zmiana wizyt","Przychód (zł)","Zmiana przychodu (zł)","Śr. na wizytę (zł)"],...mRows]);
-  ws3["!cols"]=[{wch:14},{wch:10},{wch:14},{wch:16},{wch:20},{wch:18}];
-
-  const ws2=XLSX.utils.aoa_to_sheet([["Podsumowanie analizy"],[],
-    ["Dzień odniesienia",$("data").value],
-    ["Bieżący tydzień",fmt(meta.ponBiez)+" – "+fmt(konB)],
-    ["Przyszły tydzień",fmt(meta.ponPrzysz)+" – "+fmt(konP)],
-    ["Pacjentów z wizytą w przeszłości",meta.zPrzeszloscia],
-    ["Umówionych w bież.+przysz. tyg.",meta.umowieni2],
-    ["Do zadzwonienia (brak wizyty w 2 tyg.)",meta.doDzwonienia],
-    ["   w tym bez żadnej przyszłej wizyty",meta.bezPrzyszlej],
-    ["Wierszy w liście (po filtrach)",dane.length]]);
-  ws2["!cols"]=[{wch:40},{wch:26}];
-
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws1,"Do zadzwonienia");
-  XLSX.utils.book_append_sheet(wb,ws3,"Trendy miesięczne");
-  XLSX.utils.book_append_sheet(wb,ws2,"Podsumowanie");
-  XLSX.writeFile(wb,"panel_rezerwacji_"+$("data").value+".xlsx");
+  const lista=listaAktywna().sort((a,b)=>String(b.ostData||"").localeCompare(String(a.ostData||"")));
+  const nag=["Pacjent","Ostatnia wizyta","Godz.","Terapeuta","Usługa","Liczba wizyt","Status kontaktu","Notatka","Przypomnienie","Ozn. przez","Kiedy"];
+  const rows=lista.map(x=>[x.pac,x.ostData||"",x.ostGodz||"",x.terapeuta||"",x.usluga||"",x.liczba||"",STATUS_ETYK[x.status]||x.status,x.notatka||"",x.przypomnienie||"",nazwaUzyt(x.by),x.at?fmtKiedy(x.at):""]);
+  const ws=XLSX.utils.aoa_to_sheet([nag,...rows]);
+  ws["!cols"]=[{wch:26},{wch:14},{wch:14},{wch:22},{wch:26},{wch:10},{wch:16},{wch:40},{wch:14},{wch:14},{wch:14}];
+  ws["!autofilter"]={ref:"A1:K"+(rows.length+1)};
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Do skontaktowania");
+  XLSX.writeFile(wb,"do_skontaktowania_"+$("data").value+".xlsx");
 }
 
-// start: połącz z chmurą i pokaż logowanie (albo wczytaj wspólną listę, jeśli już zalogowana)
 initChmura();
 </script>
 </body>
